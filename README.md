@@ -24,5 +24,5 @@ There should still be significant changes to come for this package, particularly
 - [ ] Utility functions to render on canvas + svg
 - [ ] Tests to ensure correctness as per paper
 
-# I've read the paper, but how does this work?
+# ELI5 how does this work?
 Coming soon!
