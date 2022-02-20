@@ -1,0 +1,24 @@
+{
+  "name": "dubins-js",
+  "license": "MIT",
+  "version": "0.0.1",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.js",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "watch": "npm run build -- --watch src",
+    "prepublishOnly": "npm run build"
+  },
+  "devDependencies": {
+    "tsup": "^5.11.13",
+    "typescript": "^4.5.5"
+  }
+}
