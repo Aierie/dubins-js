@@ -7,8 +7,9 @@ npm i dubins-js
 ```
 
 Supports CJS and ESM.
+
 # Why?
-I (the author) want to draw a fish, on HTML Canvas, using Javascript, that can move in an aesthetic and organic-looking way.
+I (the author) want to draw a fish, on HTML Canvas, using Javascript, that can move in an aestheticically pleasing and organic-looking way.
 
 # Where did the code come from?
 The Python version: https://github.com/fgabbert/dubins_py, by [@fgabbert](https://github.com/fgabbert)
@@ -21,6 +22,7 @@ There should still be significant changes to come for this package, particularly
 - [ ] Restructure so that midpoints are easily accessible
 - [ ] Easy API to lazily get a point from a Dubins path
 - [ ] Utility functions to render on canvas + svg
+- [ ] Tests to ensure correctness as per paper
 
 # I've read the paper, but how does this work?
 Coming soon!
