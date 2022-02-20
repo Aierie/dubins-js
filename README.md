@@ -2,11 +2,13 @@
 This is a JS port of [previous work](#where-did-the-code-come-from) on generating Dubins sets + paths.
 
 # Install
-```js
+```
 npm i dubins-js
 ```
+
+Supports CJS and ESM.
 # Why?
-I want to draw a fish, on HTML Canvas, using Javascript, that can move in an aesthetic and organic-looking way.
+I (the author) want to draw a fish, on HTML Canvas, using Javascript, that can move in an aesthetic and organic-looking way.
 
 # Where did the code come from?
 The Python version: https://github.com/fgabbert/dubins_py, by [@fgabbert](https://github.com/fgabbert)
