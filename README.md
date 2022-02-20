@@ -19,7 +19,7 @@ The paper: https://cpb-us-e2.wpmucdn.com/faculty.sites.uci.edu/dist/e/700/files/
 There should still be significant changes to come for this package, particularly:
 - [ ] Renaming of functions to follow JS convention
 - [ ] Better (exported) types
-- [ ] Restructure so that midpoints are easily accessible
+- [ ] Restructure so that midpoints (and segments) are easily accessible
 - [ ] Easy API to lazily get a point from a Dubins path
 - [ ] Utility functions to render on canvas + svg
 - [ ] Tests to ensure correctness as per paper
