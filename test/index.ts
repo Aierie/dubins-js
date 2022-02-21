@@ -3,7 +3,6 @@ import { calcDubinsPath, Waypoint } from '../src/index';
 
 // currently just copying the python demo 
 // accepting floating point differences for now
-// seems like js is less precise than python (28 v 17)
 let wpt1: Waypoint = { x: 0, y: 0, psi: 0 };
 let wpt2: Waypoint = { x: 6000, y: 7000, psi: 260 };
 let wpt3: Waypoint = { x: 1000, y: 15000, psi: 180 };
