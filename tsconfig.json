@@ -3,7 +3,7 @@
     "rootDir": ".",
     "baseUrl": ".",
     "target": "es2017",
-    "module": "esnext",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "lib": ["dom", "es2017", "dom.iterable", "scripthost"],
     "allowJs": true,
@@ -15,5 +15,5 @@
     "resolveJsonModule": true
   },
   "include": ["./src"],
-  "exclude": ["dist"]
+  "exclude": ["dist", "test"]
 }
