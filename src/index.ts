@@ -1,14 +1,3 @@
-// TODO: better structure around this order
-// it's implicit in a couple of places
-enum TurnType {
-    LSL = 1,
-    LSR = 2,
-    RSL = 3,
-    RSR = 4,
-    RLR = 5,
-    LRL = 6,
-};
-
 // js % does not behave the same as python
 // js's implementation is remainder
 // python's is modulo
@@ -21,34 +10,17 @@ interface DubinsTurnCalculationFunction {
     (alpha: number, beta: number, d: number): [number, number, number];
 }
 
-class Waypoint {
+export interface Waypoint {
     x: number;
     y: number;
     psi: number;
-
-    constructor(x: number, y: number, psi: number = 0) {
-        this.x = x
-        this.y = y
-        this.psi = psi
-    }
-
-    toString() {
-        return "x: " + this.x + ", y: " + this.y + ", psi: " + this.psi;
-    }
 }
 
-class Param {
+export interface Param {
     p_init: Waypoint;
     seg_final: any;
     turn_radius: number;
     type: number;
-
-    constructor(p_init: Waypoint, seg_final: [number, number, number], turn_radius: number) {
-        this.p_init = p_init
-        this.seg_final = seg_final
-        this.turn_radius = turn_radius
-        this.type = 0
-    }
 }
 
 function wrapTo360(angle: number) {
@@ -73,11 +45,16 @@ function headingToStandard(hdg: number) {
 
 export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, vel: number, phi_lim: number) {
     // Calculate a dubins path between two waypoints
-    let param = new Param(wpt1, [0, 0, 0], 0);
+    let param: Param = {
+        p_init: wpt1, 
+        seg_final: [0, 0, 0], 
+        turn_radius: 0,
+        type: 0
+    };
+
     let tz = [0, 0, 0, 0, 0, 0]
     let pz = [0, 0, 0, 0, 0, 0]
     let qz = [0, 0, 0, 0, 0, 0]
-    param.seg_final = [0, 0, 0]
     // Convert the headings from NED to standard unit cirlce, and then to radians
     let psi1 = headingToStandard(wpt1.psi) * Math.PI / 180
     let psi2 = headingToStandard(wpt2.psi) * Math.PI / 180
