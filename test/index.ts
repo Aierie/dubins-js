@@ -66,3 +66,5 @@ assert.deepEqual(
         type: 3
     }
 );
+
+console.log('✅ tests passed!');
