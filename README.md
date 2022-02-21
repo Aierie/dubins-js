@@ -21,10 +21,11 @@ There should still be significant changes to come for this package, particularly
 - [ ] Better (exported) types
 - [ ] Restructure so that midpoints (and segments) are easily accessible
 - [ ] Easy API to lazily get a point from a Dubins path
-- [ ] Utility functions to render on canvas + svg
-- [ ] Tests to ensure correctness as per paper
-- [ ] Option to autoselect the end angle?
 - [ ] Way to set the turn radius directly?
+- [ ] Option to autoselect the end angle?
+- [ ] Utility functions to render on canvas + svg
+- [ ] Documentation
+- [ ] Tests to ensure correctness as per paper
 
 # ELI5 how does this work?
 Coming soon!
