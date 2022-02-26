@@ -47,16 +47,14 @@ export interface Waypoint {
     psi: number;
 }
 
-type WaypointArray = [Waypoint['x'], Waypoint['y'], Waypoint['psi']];
-
 export interface Param {
     p_init: Waypoint;
-    // This is different from a WaypointArray. It is a set of condensed params used to generate the curve
+    // This is a set of condensed params used to generate the curve
     seg_final: [number, number, number];
     turn_radius: number;
     segments: typeof PATH_TYPES[keyof typeof PATH_TYPES]['segments'];
-    mid_pt1: WaypointArray;
-    mid_pt2: WaypointArray;
+    mid_pt1: Waypoint;
+    mid_pt2: Waypoint;
 }
 
 function wrapTo360(angle: number) {
@@ -85,8 +83,16 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, vel: number, phi_
         p_init: wpt1,
         seg_final: [0, 0, 0],
         turn_radius: 0,
-        mid_pt1: [0, 0, 0],
-        mid_pt2: [0, 0, 0],
+        mid_pt1: {
+            x: 0,
+            y: 0,
+            psi: 0,
+        },
+        mid_pt2: {
+            x: 0,
+            y: 0,
+            psi: 0,
+        },
         segments: [],
     };
 
@@ -135,7 +141,7 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, vel: number, phi_
     }
 
     param.segments = PATH_TYPES[SEGMENT_ORDER[best_word]].segments;
-    const mid_pt1 = dubins_segment(param.seg_final[0], [0, 0, headingToStandard(param.p_init.psi) * Math.PI / 180], param.segments[0])//  * param.turn_radius + param.p_init.x
+    const mid_pt1 = dubins_segment(param.seg_final[0], { x: 0, y: 0, psi: headingToStandard(param.p_init.psi) * Math.PI / 180 }, param.segments[0])//  * param.turn_radius + param.p_init.x
     const mid_pt2 = dubins_segment(param.seg_final[1], mid_pt1, param.segments[1])// * param.turn_radius + param.p_init.y;
 
     // precalculate this and expose it in the summarized param
@@ -155,7 +161,7 @@ export function dubins_traj(param: Param, step: number) {
     let i = 0
     let length = (param.seg_final[0] + param.seg_final[1] + param.seg_final[2]) * param.turn_radius
     length = Math.floor(length / step);
-    let path = Array.from({ length }, () => [-1, -1, -1]);
+    let path: Waypoint[] = Array.from({ length }, () => ({ x: -1, y: -1, psi: -1 }));
 
     while (x < length) {
         path[i] = dubins_path(param, x);
@@ -169,7 +175,8 @@ export function dubins_traj(param: Param, step: number) {
 function dubins_path(param: Param, t: number) {
     // Helper function for curve generation
     let tprime = t / param.turn_radius
-    const p_init: WaypointArray = [0, 0, headingToStandard(param.p_init.psi) * Math.PI / 180];
+    // a mock point for easier calculation. the paths get their start points added on later at the end_pt definition
+    const p_init: Waypoint = { x: 0, y: 0, psi: headingToStandard(param.p_init.psi) * Math.PI / 180 };
     //
     const types = param.segments;
     const param1 = param.seg_final[0]
@@ -186,28 +193,32 @@ function dubins_path(param: Param, t: number) {
         end_pt = dubins_segment(tprime - param1 - param2, mid_pt2, types[2])
     }
 
-    end_pt[0] = end_pt[0] * param.turn_radius + param.p_init.x
-    end_pt[1] = end_pt[1] * param.turn_radius + param.p_init.y
-    end_pt[2] = modulo(end_pt[2], (2 * Math.PI));
+    end_pt.x = end_pt.x * param.turn_radius + param.p_init.x
+    end_pt.y = end_pt.y * param.turn_radius + param.p_init.y
+    end_pt.psi = modulo(end_pt.psi, (2 * Math.PI));
 
     return end_pt
 }
 
-function dubins_segment(seg_param: number, seg_init: WaypointArray, seg_type: number): WaypointArray {
+function dubins_segment(seg_param: number, seg_init: Waypoint, seg_type: number): Waypoint {
     // Helper function for curve generation
-    const seg_end: WaypointArray = [0.0, 0.0, 0.0];
+    const seg_end: Waypoint = {
+        x: 0,
+        y: 0,
+        psi: 0
+    };
     if (seg_type == SEGMENT_TYPES.LEFT) {
-        seg_end[0] = seg_init[0] + Math.sin(seg_init[2] + seg_param) - Math.sin(seg_init[2])
-        seg_end[1] = seg_init[1] - Math.cos(seg_init[2] + seg_param) + Math.cos(seg_init[2])
-        seg_end[2] = seg_init[2] + seg_param
+        seg_end.x = seg_init.x + Math.sin(seg_init.psi + seg_param) - Math.sin(seg_init.psi)
+        seg_end.y = seg_init.y - Math.cos(seg_init.psi + seg_param) + Math.cos(seg_init.psi)
+        seg_end.psi = seg_init.psi + seg_param
     } else if (seg_type == SEGMENT_TYPES.RIGHT) {
-        seg_end[0] = seg_init[0] - Math.sin(seg_init[2] - seg_param) + Math.sin(seg_init[2])
-        seg_end[1] = seg_init[1] + Math.cos(seg_init[2] - seg_param) - Math.cos(seg_init[2])
-        seg_end[2] = seg_init[2] - seg_param
+        seg_end.x = seg_init.x - Math.sin(seg_init.psi - seg_param) + Math.sin(seg_init.psi)
+        seg_end.y = seg_init.y + Math.cos(seg_init.psi - seg_param) - Math.cos(seg_init.psi)
+        seg_end.psi = seg_init.psi - seg_param
     } else if (seg_type == SEGMENT_TYPES.STRAIGHT) {
-        seg_end[0] = seg_init[0] + Math.cos(seg_init[2]) * seg_param
-        seg_end[1] = seg_init[1] + Math.sin(seg_init[2]) * seg_param
-        seg_end[2] = seg_init[2]
+        seg_end.x = seg_init.x + Math.cos(seg_init.psi) * seg_param
+        seg_end.y = seg_init.y + Math.sin(seg_init.psi) * seg_param
+        seg_end.psi = seg_init.psi
     };
 
 
