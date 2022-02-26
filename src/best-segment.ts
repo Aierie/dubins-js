@@ -1,4 +1,5 @@
-import { modulo } from './util';
+import { headingToStandard, modulo } from './util';
+import type { Waypoint } from './util';
 
 interface DubinsTurnCalculationFunction {
     (alpha: number, beta: number, d: number): [number, number, number];
@@ -98,11 +99,93 @@ let LRL: DubinsTurnCalculationFunction = function LRL(alpha, beta, d) {
     }
 }
 
-export {
-    LSL, 
-    RSR, 
-    RSL, 
-    LSR, 
-    RLR, 
-    LRL
+export const SEGMENT_TYPES = {
+    LEFT: 1,
+    STRAIGHT: 2,
+    RIGHT: 3,
+};
+
+export const PATH_TYPES = {
+    LSL: {
+        calc: LSL,
+        segments: [SEGMENT_TYPES.LEFT, SEGMENT_TYPES.STRAIGHT, SEGMENT_TYPES.LEFT],
+    },
+    LSR: {
+        calc: LSR,
+        segments: [SEGMENT_TYPES.LEFT, SEGMENT_TYPES.STRAIGHT, SEGMENT_TYPES.RIGHT]
+    },
+    RSL: {
+        calc: RSL,
+        segments: [SEGMENT_TYPES.RIGHT, SEGMENT_TYPES.STRAIGHT, SEGMENT_TYPES.LEFT],
+    },
+    RSR: {
+        calc: RSR,
+        segments: [SEGMENT_TYPES.RIGHT, SEGMENT_TYPES.STRAIGHT, SEGMENT_TYPES.RIGHT]
+    },
+    RLR: {
+        calc: RLR,
+        segments: [SEGMENT_TYPES.RIGHT, SEGMENT_TYPES.LEFT, SEGMENT_TYPES.RIGHT],
+    },
+    LRL: {
+        calc: LRL,
+        segments: [SEGMENT_TYPES.LEFT, SEGMENT_TYPES.RIGHT, SEGMENT_TYPES.LEFT]
+    },
+};
+
+export type Segments = typeof PATH_TYPES[keyof typeof PATH_TYPES]['segments'];
+
+const SEGMENT_ORDER: (keyof typeof PATH_TYPES)[] = [
+    'LSL',
+    'LSR',
+    'RSL',
+    'RSR',
+    'RLR',
+    'LRL'
+];
+
+export function bestSegment(wpt1: Waypoint, wpt2: Waypoint, turn_radius: number) {
+    let tz = [0, 0, 0, 0, 0, 0]
+    let pz = [0, 0, 0, 0, 0, 0]
+    let qz = [0, 0, 0, 0, 0, 0]
+    // Convert the headings from NED to standard unit cirlce, and then to radians
+    let psi1 = headingToStandard(wpt1.psi) * Math.PI / 180
+    let psi2 = headingToStandard(wpt2.psi) * Math.PI / 180
+
+    // we could also directly do the turn radius as an argument
+    let dx = wpt2.x - wpt1.x
+    let dy = wpt2.y - wpt1.y
+    let D = Math.sqrt(dx * dx + dy * dy)
+    let d = D / turn_radius // Normalize by turn radius...makes length calculation easier down the road.
+
+    // Angles defined in the paper
+    let theta = modulo(Math.atan2(dy, dx), (2 * Math.PI));
+    let alpha = modulo((psi1 - theta), (2 * Math.PI));
+    let beta = modulo((psi2 - theta), (2 * Math.PI));
+    let best_word = -1
+    let best_cost = -1
+
+    // Calculate all dubin's paths between points
+    let orderedFns = SEGMENT_ORDER.map(key => PATH_TYPES[key].calc);
+    for (let i = 0; i < orderedFns.length; i++) {
+        const [t, p, q] = orderedFns[i](alpha, beta, d);
+        tz[i] = t;
+        pz[i] = p;
+        qz[i] = q;
+    }
+
+    let cost;
+    // Now, pick the one with the lowest cost
+    for (let x = 0; x < 6; x++) {
+        if (tz[x] != -1) {
+            cost = tz[x] + pz[x] + qz[x]
+            if (cost < best_cost || best_cost == -1) {
+                best_word = x
+                best_cost = cost
+            }
+        }
+    }
+    return {
+        seg_final: [tz[best_word], pz[best_word], qz[best_word]],
+        segments: PATH_TYPES[SEGMENT_ORDER[best_word]].segments,
+    }
 }

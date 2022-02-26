@@ -1,80 +1,18 @@
-import { modulo } from './util';
-import * as calculate from './calculate-paths';
+import { headingToStandard, modulo } from './util';
+import type { Waypoint } from './util';
+export type { Waypoint };
+import { bestSegment, SEGMENT_TYPES } from './best-segment';
+import type { Segments } from './best-segment';
 
-const SEGMENT_TYPES = {
-    LEFT: 1,
-    STRAIGHT: 2,
-    RIGHT: 3,
-}
-const PATH_TYPES = {
-    LSL: {
-        calc: calculate.LSL,
-        segments: [SEGMENT_TYPES.LEFT, SEGMENT_TYPES.STRAIGHT, SEGMENT_TYPES.LEFT],
-    },
-    LSR: {
-        calc: calculate.LSR,
-        segments: [SEGMENT_TYPES.LEFT, SEGMENT_TYPES.STRAIGHT, SEGMENT_TYPES.RIGHT]
-    },
-    RSL: {
-        calc: calculate.RSL,
-        segments: [SEGMENT_TYPES.RIGHT, SEGMENT_TYPES.STRAIGHT, SEGMENT_TYPES.LEFT],
-    },
-    RSR: {
-        calc: calculate.RSR,
-        segments: [SEGMENT_TYPES.RIGHT, SEGMENT_TYPES.STRAIGHT, SEGMENT_TYPES.RIGHT]
-    },
-    RLR: {
-        calc: calculate.RLR,
-        segments: [SEGMENT_TYPES.RIGHT, SEGMENT_TYPES.LEFT, SEGMENT_TYPES.RIGHT],
-    },
-    LRL: {
-        calc: calculate.LRL,
-        segments: [SEGMENT_TYPES.LEFT, SEGMENT_TYPES.RIGHT, SEGMENT_TYPES.LEFT]
-    },
-};
-const SEGMENT_ORDER: (keyof typeof PATH_TYPES)[] = [
-    'LSL',
-    'LSR',
-    'RSL',
-    'RSR',
-    'RLR',
-    'LRL'
-];
-
-export interface Waypoint {
-    x: number;
-    y: number;
-    psi: number;
-}
 
 export interface Param {
     p_init: Waypoint;
     // This is a set of condensed params used to generate the curve
     seg_final: [number, number, number];
     turn_radius: number;
-    segments: typeof PATH_TYPES[keyof typeof PATH_TYPES]['segments'];
+    segments: Segments;
     mid_pt1: Waypoint;
     mid_pt2: Waypoint;
-}
-
-function wrapTo360(angle: number) {
-    let posIn = angle > 0
-    angle = modulo(angle, 360);
-    if (angle == 0 && posIn)
-        angle = 360
-    return angle
-}
-
-function wrapTo180(angle: number) {
-    let q = (angle < -180) || (180 < angle)
-    if (q)
-        angle = wrapTo360(angle + 180) - 180
-    return angle
-}
-
-function headingToStandard(hdg: number) {
-    // Convert NED heading to standard unit cirlce...degrees only for now (Im lazy)
-    return wrapTo360(90 - wrapTo180(hdg))
 }
 
 export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, vel: number, phi_lim: number) {
@@ -96,51 +34,12 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, vel: number, phi_
         segments: [],
     };
 
-    let tz = [0, 0, 0, 0, 0, 0]
-    let pz = [0, 0, 0, 0, 0, 0]
-    let qz = [0, 0, 0, 0, 0, 0]
-    // Convert the headings from NED to standard unit cirlce, and then to radians
-    let psi1 = headingToStandard(wpt1.psi) * Math.PI / 180
-    let psi2 = headingToStandard(wpt2.psi) * Math.PI / 180
-
-    // Do Math
-    // we could also directly do the turn radius as an argument
     param.turn_radius = (vel * vel) / (9.8 * Math.tan(phi_lim * Math.PI / 180))
-    let dx = wpt2.x - wpt1.x
-    let dy = wpt2.y - wpt1.y
-    let D = Math.sqrt(dx * dx + dy * dy)
-    let d = D / param.turn_radius // Normalize by turn radius...makes length calculation easier down the road.
 
-    // Angles defined in the paper
-    let theta = modulo(Math.atan2(dy, dx), (2 * Math.PI));
-    let alpha = modulo((psi1 - theta), (2 * Math.PI));
-    let beta = modulo((psi2 - theta), (2 * Math.PI));
-    let best_word = -1
-    let best_cost = -1
+    let temp = bestSegment(wpt1, wpt2, param.turn_radius);
 
-    // Calculate all dubin's paths between points
-    let orderedFns = SEGMENT_ORDER.map(key => PATH_TYPES[key].calc);
-    for (let i = 0; i < orderedFns.length; i++) {
-        const [t, p, q] = orderedFns[i](alpha, beta, d);
-        tz[i] = t;
-        pz[i] = p;
-        qz[i] = q;
-    }
-
-    let cost;
-    // Now, pick the one with the lowest cost
-    for (let x = 0; x < 6; x++) {
-        if (tz[x] != -1) {
-            cost = tz[x] + pz[x] + qz[x]
-            if (cost < best_cost || best_cost == -1) {
-                best_word = x
-                best_cost = cost
-                param.seg_final = [tz[x], pz[x], qz[x]]
-            }
-        }
-    }
-
-    param.segments = PATH_TYPES[SEGMENT_ORDER[best_word]].segments;
+    param.seg_final = temp.seg_final as [number, number, number];
+    param.segments = temp.segments;
     const mid_pt1 = dubins_segment(param.seg_final[0], { x: 0, y: 0, psi: headingToStandard(param.p_init.psi) * Math.PI / 180 }, param.segments[0])//  * param.turn_radius + param.p_init.x
     const mid_pt2 = dubins_segment(param.seg_final[1], mid_pt1, param.segments[1])// * param.turn_radius + param.p_init.y;
 
