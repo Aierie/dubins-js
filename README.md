@@ -17,7 +17,7 @@ The paper: https://cpb-us-e2.wpmucdn.com/faculty.sites.uci.edu/dist/e/700/files/
 
 # This is WIP
 There should still be significant changes to come for this package, particularly:
-- [ ] Renaming of functions to follow JS convention
+- [ ] Renaming of functions and other variables to follow JS convention
 - [ ] Better (exported) types
 - [ ] Tests to ensure correctness as per paper
 - [ ] Restructure so that midpoints (and segments) are easily accessible
