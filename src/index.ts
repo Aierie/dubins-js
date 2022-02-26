@@ -1,14 +1,45 @@
-// js % does not behave the same as python
-// js's implementation is remainder
-// python's is modulo
-// TODO: what is the actual difference?
-function modulo(n1: number, n2: number): number {
-    return ((n1 % n2) + n2) % n2;
-}
+import { modulo } from './util';
+import * as calculate from './calculate-paths';
 
-interface DubinsTurnCalculationFunction {
-    (alpha: number, beta: number, d: number): [number, number, number];
+const SEGMENT_TYPES = {
+    LEFT: 1,
+    STRAIGHT: 2,
+    RIGHT: 3,
 }
+const PATH_TYPES = {
+    LSL: {
+        calc: calculate.LSL,
+        segments: [SEGMENT_TYPES.LEFT, SEGMENT_TYPES.STRAIGHT, SEGMENT_TYPES.LEFT],
+    },
+    LSR: {
+        calc: calculate.LSR,
+        segments: [SEGMENT_TYPES.LEFT, SEGMENT_TYPES.STRAIGHT, SEGMENT_TYPES.RIGHT]
+    },
+    RSL: {
+        calc: calculate.RSL,
+        segments: [SEGMENT_TYPES.RIGHT, SEGMENT_TYPES.STRAIGHT, SEGMENT_TYPES.LEFT],
+    },
+    RSR: {
+        calc: calculate.RSR,
+        segments: [SEGMENT_TYPES.RIGHT, SEGMENT_TYPES.STRAIGHT, SEGMENT_TYPES.RIGHT]
+    },
+    RLR: {
+        calc: calculate.RLR,
+        segments: [SEGMENT_TYPES.RIGHT, SEGMENT_TYPES.LEFT, SEGMENT_TYPES.RIGHT],
+    },
+    LRL: {
+        calc: calculate.LRL,
+        segments: [SEGMENT_TYPES.LEFT, SEGMENT_TYPES.RIGHT, SEGMENT_TYPES.LEFT]
+    },
+};
+const SEGMENT_ORDER: (keyof typeof PATH_TYPES)[] = [
+    'LSL',
+    'LSR',
+    'RSL',
+    'RSR',
+    'RLR',
+    'LRL'
+];
 
 export interface Waypoint {
     x: number;
@@ -16,11 +47,16 @@ export interface Waypoint {
     psi: number;
 }
 
+type WaypointArray = [Waypoint['x'], Waypoint['y'], Waypoint['psi']];
+
 export interface Param {
     p_init: Waypoint;
-    seg_final: any;
+    // This is different from a WaypointArray. It is a set of condensed params used to generate the curve
+    seg_final: [number, number, number];
     turn_radius: number;
-    type: number;
+    segments: typeof PATH_TYPES[keyof typeof PATH_TYPES]['segments'];
+    mid_pt1: WaypointArray;
+    mid_pt2: WaypointArray;
 }
 
 function wrapTo360(angle: number) {
@@ -46,10 +82,12 @@ function headingToStandard(hdg: number) {
 export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, vel: number, phi_lim: number) {
     // Calculate a dubins path between two waypoints
     let param: Param = {
-        p_init: wpt1, 
-        seg_final: [0, 0, 0], 
+        p_init: wpt1,
+        seg_final: [0, 0, 0],
         turn_radius: 0,
-        type: 0
+        mid_pt1: [0, 0, 0],
+        mid_pt2: [0, 0, 0],
+        segments: [],
     };
 
     let tz = [0, 0, 0, 0, 0, 0]
@@ -75,7 +113,7 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, vel: number, phi_
     let best_cost = -1
 
     // Calculate all dubin's paths between points
-    let orderedFns = [dubinsLSL, dubinsLSR, dubinsRSL, dubinsRSR, dubinsRLR, dubinsLRL];
+    let orderedFns = SEGMENT_ORDER.map(key => PATH_TYPES[key].calc);
     for (let i = 0; i < orderedFns.length; i++) {
         const [t, p, q] = orderedFns[i](alpha, beta, d);
         tz[i] = t;
@@ -89,110 +127,24 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, vel: number, phi_
         if (tz[x] != -1) {
             cost = tz[x] + pz[x] + qz[x]
             if (cost < best_cost || best_cost == -1) {
-                best_word = x + 1
+                best_word = x
                 best_cost = cost
                 param.seg_final = [tz[x], pz[x], qz[x]]
             }
         }
     }
 
-    param.type = best_word;
+    param.segments = PATH_TYPES[SEGMENT_ORDER[best_word]].segments;
+    const mid_pt1 = dubins_segment(param.seg_final[0], [0, 0, headingToStandard(param.p_init.psi) * Math.PI / 180], param.segments[0])//  * param.turn_radius + param.p_init.x
+    const mid_pt2 = dubins_segment(param.seg_final[1], mid_pt1, param.segments[1])// * param.turn_radius + param.p_init.y;
+
+    // precalculate this and expose it in the summarized param
+    // because it is useful for rendering
+    // and is constant
+    param.mid_pt1 = mid_pt1;
+    param.mid_pt2 = mid_pt2;
+
     return param
-}
-
-// Here's all of the dubins path Math
-let dubinsLSL: DubinsTurnCalculationFunction = function dubinsLSL(alpha, beta, d) {
-    let tmp0 = d + Math.sin(alpha) - Math.sin(beta)
-    let tmp1 = Math.atan2((Math.cos(beta) - Math.cos(alpha)), tmp0)
-    let p_squared = 2 + d * d - (2 * Math.cos(alpha - beta)) + (2 * d * (Math.sin(alpha) - Math.sin(beta)))
-    if (p_squared < 0) {
-        console.log('No LSL Path')
-        return [-1, -1, -1];
-    } else {
-        let result = [
-            modulo((tmp1 - alpha), (2 * Math.PI)),
-            Math.sqrt(p_squared),
-            modulo((beta - tmp1), (2 * Math.PI))
-        ];
-        return [
-            modulo((tmp1 - alpha), (2 * Math.PI)),
-            Math.sqrt(p_squared),
-            modulo((beta - tmp1), (2 * Math.PI))
-        ];
-    }
-}
-
-let dubinsRSR: DubinsTurnCalculationFunction = function dubinsRSR(alpha, beta, d) {
-    let tmp0 = d - Math.sin(alpha) + Math.sin(beta)
-    let tmp1 = Math.atan2((Math.cos(alpha) - Math.cos(beta)), tmp0)
-    let p_squared = 2 + d * d - (2 * Math.cos(alpha - beta)) + 2 * d * (Math.sin(beta) - Math.sin(alpha))
-    if (p_squared < 0) {
-        console.log('No RSR Path')
-        return [-1, -1, -1];
-    } else {
-        let t = modulo((alpha - tmp1), (2 * Math.PI));
-        let p = Math.sqrt(p_squared);
-        let q = modulo((-1 * beta + tmp1), (2 * Math.PI));
-        return [t, p, q]
-    }
-}
-
-let dubinsRSL: DubinsTurnCalculationFunction = function dubinsRSL(alpha, beta, d) {
-    let tmp0 = d - Math.sin(alpha) - Math.sin(beta)
-    let p_squared = -2 + d * d + 2 * Math.cos(alpha - beta) - 2 * d * (Math.sin(alpha) + Math.sin(beta))
-    if (p_squared < 0) {
-        console.log('No RSL Path')
-        return [-1, -1, -1];
-    } else {
-        let p = Math.sqrt(p_squared)
-        let tmp2 = Math.atan2((Math.cos(alpha) + Math.cos(beta)), tmp0) - Math.atan2(2, p)
-        let t = modulo((alpha - tmp2), (2 * Math.PI));
-        let q = modulo((beta - tmp2), (2 * Math.PI));
-        return [t, p, q];
-    }
-}
-
-let dubinsLSR: DubinsTurnCalculationFunction = function dubinsLSR(alpha, beta, d) {
-    let tmp0 = d + Math.sin(alpha) + Math.sin(beta)
-    let p_squared = -2 + d * d + 2 * Math.cos(alpha - beta) + 2 * d * (Math.sin(alpha) + Math.sin(beta))
-    if (p_squared < 0) {
-        console.log('No LSR Path')
-        return [-1, -1, -1];
-    } else {
-        let p = Math.sqrt(p_squared)
-        let tmp2 = Math.atan2((-1 * Math.cos(alpha) - Math.cos(beta)), tmp0) - Math.atan2(-2, p)
-        let t = modulo((tmp2 - alpha), (2 * Math.PI));
-        let q = modulo((tmp2 - beta), (2 * Math.PI));
-        return [t, p, q]
-    }
-}
-
-let dubinsRLR: DubinsTurnCalculationFunction = function dubinsRLR(alpha, beta, d) {
-    let tmp_rlr = (6 - d * d + 2 * Math.cos(alpha - beta) + 2 * d * (Math.sin(alpha) - Math.sin(beta))) / 8
-    if (Math.abs(tmp_rlr) > 1) {
-        console.log('No RLR Path')
-        return [-1, -1, -1];
-    }
-    else {
-        let p = modulo((2 * Math.PI - Math.acos(tmp_rlr)), (2 * Math.PI));
-        let t = modulo((alpha - Math.atan2((Math.cos(alpha) - Math.cos(beta)), d - Math.sin(alpha) + Math.sin(beta)) + modulo(p / 2, (2 * Math.PI))), (2 * Math.PI))
-        let q = modulo((alpha - beta - t + modulo(p, (2 * Math.PI))), (2 * Math.PI));
-
-        return [t, p, q]
-    }
-}
-
-let dubinsLRL: DubinsTurnCalculationFunction = function dubinsLRL(alpha, beta, d) {
-    let tmp_lrl = (6 - d * d + 2 * Math.cos(alpha - beta) + 2 * d * (-1 * Math.sin(alpha) + Math.sin(beta))) / 8
-    if (Math.abs(tmp_lrl) > 1) {
-        console.log('No LRL Path')
-        return [-1, -1, -1];
-    } else {
-        let p = modulo((2 * Math.PI - Math.acos(tmp_lrl)), (2 * Math.PI));
-        let t = modulo((-1 * alpha - Math.atan2((Math.cos(alpha) - Math.cos(beta)), d + Math.sin(alpha) - Math.sin(beta)) + p / 2), (2 * Math.PI));
-        let q = modulo((modulo(beta, (2 * Math.PI)) - alpha - t + modulo(p, (2 * Math.PI))), (2 * Math.PI))
-        return [t, p, q]
-    }
 }
 
 // TODO: yet to check the trajectory and the drawing functions
@@ -217,18 +169,13 @@ export function dubins_traj(param: Param, step: number) {
 function dubins_path(param: Param, t: number) {
     // Helper function for curve generation
     let tprime = t / param.turn_radius
-    const p_init: [number, number, number] = [0, 0, headingToStandard(param.p_init.psi) * Math.PI / 180];
+    const p_init: WaypointArray = [0, 0, headingToStandard(param.p_init.psi) * Math.PI / 180];
     //
-    const L_SEG = 1
-    const S_SEG = 2
-    const R_SEG = 3
-    const DIRDATA = [[L_SEG, S_SEG, L_SEG], [L_SEG, S_SEG, R_SEG], [R_SEG, S_SEG, L_SEG], [R_SEG, S_SEG, R_SEG], [R_SEG, L_SEG, R_SEG], [L_SEG, R_SEG, L_SEG]];
-    //
-    const types = DIRDATA[param.type - 1].slice();
+    const types = param.segments;
     const param1 = param.seg_final[0]
     const param2 = param.seg_final[1]
-    const mid_pt1: [number, number, number] = dubins_segment(param1, p_init, types[0])
-    const mid_pt2 = dubins_segment(param2, mid_pt1, types[1])
+    const mid_pt1 = param.mid_pt1;
+    const mid_pt2 = param.mid_pt2;
 
     let end_pt;
     if (tprime < param1) {
@@ -246,21 +193,18 @@ function dubins_path(param: Param, t: number) {
     return end_pt
 }
 
-function dubins_segment(seg_param: number, seg_init: [number, number, number], seg_type: number): [number, number, number] {
+function dubins_segment(seg_param: number, seg_init: WaypointArray, seg_type: number): WaypointArray {
     // Helper function for curve generation
-    const L_SEG = 1
-    const S_SEG = 2
-    const R_SEG = 3
-    const seg_end: [number, number, number] = [0.0, 0.0, 0.0];
-    if (seg_type == L_SEG) {
+    const seg_end: WaypointArray = [0.0, 0.0, 0.0];
+    if (seg_type == SEGMENT_TYPES.LEFT) {
         seg_end[0] = seg_init[0] + Math.sin(seg_init[2] + seg_param) - Math.sin(seg_init[2])
         seg_end[1] = seg_init[1] - Math.cos(seg_init[2] + seg_param) + Math.cos(seg_init[2])
         seg_end[2] = seg_init[2] + seg_param
-    } else if (seg_type == R_SEG) {
+    } else if (seg_type == SEGMENT_TYPES.RIGHT) {
         seg_end[0] = seg_init[0] - Math.sin(seg_init[2] - seg_param) + Math.sin(seg_init[2])
         seg_end[1] = seg_init[1] + Math.cos(seg_init[2] - seg_param) - Math.cos(seg_init[2])
         seg_end[2] = seg_init[2] - seg_param
-    } else if (seg_type == S_SEG) {
+    } else if (seg_type == SEGMENT_TYPES.STRAIGHT) {
         seg_end[0] = seg_init[0] + Math.cos(seg_init[2]) * seg_param
         seg_end[1] = seg_init[1] + Math.sin(seg_init[2]) * seg_param
         seg_end[2] = seg_init[2]
