@@ -134,14 +134,14 @@ function map(num: number, inMin: number, inMax: number, outMin: number, outMax: 
     return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
 }
 
-export class DubinsPath {
+export class Dubins {
     constructor(
-        public segments: DubinsPathSegment[],
+        public segments: Segment[],
         public turnRadius: number,
     ) { }
 
     // TODO: test curves method and make it public
-    private curves(wpt1: Waypoint, wpt2: Waypoint, turnRadius: number): DubinsPath[] {
+    private curves(wpt1: Waypoint, wpt2: Waypoint, turnRadius: number): Dubins[] {
         throw new Error('Untested! Please test this before allowing use in the API.');
         wpt1 = {
             ...wpt1
@@ -178,28 +178,28 @@ export class DubinsPath {
             qz[i] = q;
         }
 
-        let curves: DubinsPath[] = [];
+        let curves: Dubins[] = [];
         // Now, pick the one with the lowest cost
         for (let x = 0; x < 6; x++) {
             if (tz[x] === -1) {
                 continue;
             }
 
-            const segments: DubinsPathSegment[] = [];
+            const segments: Segment[] = [];
             let segmentStart = wpt1;
             for (let i in PATH_TYPES[SEGMENT_ORDER[bestWord]].segments) {
                 let type = PATH_TYPES[SEGMENT_ORDER[bestWord]].segments[i]
-                let newSegment = new DubinsPathSegment(type, segmentStart, turnRadius, [tz, pz, qz][i][bestWord]);
+                let newSegment = new Segment(type, segmentStart, turnRadius, [tz, pz, qz][i][bestWord]);
                 segments.push(newSegment);
                 segmentStart = newSegment.pointAtLength(newSegment.tprimeMax);
             }
-            curves.push(new DubinsPath(segments, turnRadius));
+            curves.push(new Dubins(segments, turnRadius));
         }
 
         return curves;
     }
 
-    static path(wpt1: Waypoint, wpt2: Waypoint, turnRadius: number): DubinsPath {
+    static path(wpt1: Waypoint, wpt2: Waypoint, turnRadius: number): Dubins {
         let tz = [0, 0, 0, 0, 0, 0]
         let pz = [0, 0, 0, 0, 0, 0]
         let qz = [0, 0, 0, 0, 0, 0]
@@ -241,16 +241,16 @@ export class DubinsPath {
             }
         }
 
-        const segments: DubinsPathSegment[] = [];
+        const segments: Segment[] = [];
         let segmentStart = wpt1;
         for (let i in PATH_TYPES[SEGMENT_ORDER[bestWord]].segments) {
             let type = PATH_TYPES[SEGMENT_ORDER[bestWord]].segments[i]
-            let newSegment = new DubinsPathSegment(type, segmentStart, turnRadius, [tz, pz, qz][i][bestWord]);
+            let newSegment = new Segment(type, segmentStart, turnRadius, [tz, pz, qz][i][bestWord]);
             segments.push(newSegment);
             segmentStart = newSegment.pointAtLength(newSegment.tprimeMax);
         }
 
-        return new DubinsPath(segments, turnRadius);
+        return new Dubins(segments, turnRadius);
     }
 
 
@@ -299,7 +299,7 @@ export class DubinsPath {
     }
 }
 
-export class DubinsPathSegment {
+export class Segment {
     constructor(
         public type: typeof SEGMENT_TYPES[keyof typeof SEGMENT_TYPES],
         public startPoint: Waypoint,

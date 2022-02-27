@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { SEGMENT_TYPES, DubinsPath, Waypoint } from '../src/index';
+import { SEGMENT_TYPES, Dubins, Waypoint } from '../src/index';
 
 
 let wpt1: Waypoint = { x: 0, y: 0, psi: 1.5707963267948966 };
@@ -8,7 +8,7 @@ let wpt3: Waypoint = { x: 1000, y: 15000, psi: 4.71238898038469 };
 let wpt4: Waypoint = { x: 0, y: 0, psi: 3.141592653589793 };
 let turnRadius =  2270.8741936308616;
 
-let p1p2 = DubinsPath.path(
+let p1p2 = Dubins.path(
     wpt1,
     wpt2,
     turnRadius
@@ -106,7 +106,7 @@ assert.deepEqual(
     }
 )
 
-let p2p3 = DubinsPath.path(
+let p2p3 = Dubins.path(
     wpt2,
     wpt3,
     turnRadius
@@ -175,7 +175,7 @@ assert.deepEqual(
     }
 )
 
-let p3p4 = DubinsPath.path(
+let p3p4 = Dubins.path(
     wpt3,
     wpt4,
     turnRadius
@@ -268,7 +268,7 @@ assert.deepEqual(
 
 
 let turnRadius2 = 342.73935987877445;
-let p1p2SmallTurn = DubinsPath.path(
+let p1p2SmallTurn = Dubins.path(
     wpt1,
     wpt2,
     turnRadius2
