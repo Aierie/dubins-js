@@ -138,8 +138,15 @@ export class DubinsPath {
     constructor(
         public segments: DubinsPathSegment[],
         public turnRadius: number,
-        public length: number
     ) { }
+
+    get tprimeMax(){
+        return this.segments[0].tprimeMax + this.segments[1].tprimeMax + this.segments[2].tprimeMax
+    }
+
+    get length(){
+        return Math.floor(this.tprimeMax * this.turnRadius);
+    }
 
     pointAtLength(length: number) {
         // TODO: is this correct?
@@ -270,7 +277,5 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, vel: number, phi_
         segmentStart = newSegment.pointAtLength(newSegment.tprimeMax);
     }
 
-    const length = Math.floor((tz[best_word] + pz[best_word] + qz[best_word]) * turnRadius);
-
-    return new DubinsPath(segments, turnRadius, length);
+    return new DubinsPath(segments, turnRadius);
 }
