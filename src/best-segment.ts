@@ -201,7 +201,7 @@ export function bestSegment(wpt1: Waypoint, wpt2: Waypoint, turn_radius: number)
         segmentStart = newSegment.pointAtLength(newSegment.tprimeMax);
     }
 
-    const maxSteps = (tz[best_word] + pz[best_word] + qz[best_word]) * turn_radius;
+    const maxSteps = Math.floor((tz[best_word] + pz[best_word] + qz[best_word]) * turn_radius);
 
     return new DubinsPath(segments, turn_radius, maxSteps);
 }
