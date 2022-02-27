@@ -138,14 +138,15 @@ export class DubinsPath {
     constructor(
         public segments: DubinsPathSegment[],
         public turnRadius: number,
-        public unitLength: number
+        public length: number
     ) { }
 
-    pointAtLength(step: number) {
-        if (step > this.unitLength) {
-            throw new Error('step count too large');
+    pointAtLength(length: number) {
+        // TODO: is this correct?
+        if (length > this.length) {
+            throw new Error('length exceeds unit length');
         }
-        let tprime = step / this.turnRadius;
+        let tprime = length / this.turnRadius;
         if (tprime < this.segments[0].tprimeMax) {
             return this.segments[0].pointAtLength(tprime);
         } else if ((tprime - this.segments[0].tprimeMax) < this.segments[1].tprimeMax) {
@@ -159,7 +160,7 @@ export class DubinsPath {
         return {
             segments: this.segments.map(segment => segment.toJSON()),
             turnRadius: this.turnRadius,
-            unitLength: this.unitLength,
+            length: this.length,
         }
     }
 }
@@ -269,7 +270,7 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, vel: number, phi_
         segmentStart = newSegment.pointAtLength(newSegment.tprimeMax);
     }
 
-    const unitLength = Math.floor((tz[best_word] + pz[best_word] + qz[best_word]) * turnRadius);
+    const length = Math.floor((tz[best_word] + pz[best_word] + qz[best_word]) * turnRadius);
 
-    return new DubinsPath(segments, turnRadius, unitLength);
+    return new DubinsPath(segments, turnRadius, length);
 }
