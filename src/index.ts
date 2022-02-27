@@ -1,6 +1,6 @@
 import type { Waypoint } from './util';
 export type { Waypoint };
-import { headingToStandard, modulo } from './util';
+import { modulo } from './util';
 
 interface DubinsTurnCalculationFunction {
     (alpha: number, beta: number, d: number): [number, number, number];
@@ -25,11 +25,6 @@ const PATH_TYPES: Record<string, {
                 console.log('No LSL Path')
                 return [-1, -1, -1];
             } else {
-                let result = [
-                    modulo((tmp1 - alpha), (2 * Math.PI)),
-                    Math.sqrt(p_squared),
-                    modulo((beta - tmp1), (2 * Math.PI))
-                ];
                 return [
                     modulo((tmp1 - alpha), (2 * Math.PI)),
                     Math.sqrt(p_squared),
@@ -245,8 +240,8 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, turnRadius: numbe
     let pz = [0, 0, 0, 0, 0, 0]
     let qz = [0, 0, 0, 0, 0, 0]
     // Convert the headings from NED to standard unit cirlce, and then to radians
-    let psi1 = headingToStandard(wpt1.psi) * Math.PI / 180
-    let psi2 = headingToStandard(wpt2.psi) * Math.PI / 180
+    let psi1 = wpt1.psi
+    let psi2 = wpt2.psi
 
     // we could also directly do the turn radius as an argument
     let dx = wpt2.x - wpt1.x
@@ -283,7 +278,7 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, turnRadius: numbe
     }
 
     const segments: DubinsPathSegment[] = [];
-    wpt1.psi = headingToStandard(wpt1.psi) * Math.PI / 180
+    wpt1.psi = wpt1.psi
     let segmentStart = wpt1;
     for (let i in PATH_TYPES[SEGMENT_ORDER[best_word]].segments) {
         let type = PATH_TYPES[SEGMENT_ORDER[best_word]].segments[i]

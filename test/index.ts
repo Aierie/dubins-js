@@ -3,10 +3,10 @@ import { SEGMENT_TYPES, calcDubinsPath, Waypoint } from '../src/index';
 
 // currently just copying the python demo 
 // accepting floating point differences for now
-let wpt1: Waypoint = { x: 0, y: 0, psi: 0 };
-let wpt2: Waypoint = { x: 6000, y: 7000, psi: 260 };
-let wpt3: Waypoint = { x: 1000, y: 15000, psi: 180 };
-let wpt4: Waypoint = { x: 0, y: 0, psi: 270 };
+let wpt1: Waypoint = { x: 0, y: 0, psi: 1.5707963267948966 };
+let wpt2: Waypoint = { x: 6000, y: 7000, psi: 3.3161255787892263 };
+let wpt3: Waypoint = { x: 1000, y: 15000, psi: 4.71238898038469 };
+let wpt4: Waypoint = { x: 0, y: 0, psi: 3.141592653589793 };
 let turnRadius =  2270.8741936308616;
 
 let p1p2 = calcDubinsPath(

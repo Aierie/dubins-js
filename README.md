@@ -21,7 +21,7 @@ There should still be significant changes to come for this package, particularly
 - [x] Better (exported) types
 - [x] Easy API to lazily get a point from a Dubins path
       - [x] add pointAt
-- [ ] Angles should only use radians and use the x axis as a base, as normal unit circles do
+- [x] Angles should only use radians and use the x axis as a base, as normal unit circles do
 - [ ] Renaming of functions and other variables to follow JS convention
 - [ ] Initial documentation
 - [ ] Utility functions to render on canvas + svg (separate module, optional import?)
