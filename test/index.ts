@@ -7,14 +7,12 @@ let wpt1: Waypoint = { x: 0, y: 0, psi: 0 };
 let wpt2: Waypoint = { x: 6000, y: 7000, psi: 260 };
 let wpt3: Waypoint = { x: 1000, y: 15000, psi: 180 };
 let wpt4: Waypoint = { x: 0, y: 0, psi: 270 };
-let vel = 90;
-let phi_lim = 20;
+let turnRadius =  2270.8741936308616;
 
 let p1p2 = calcDubinsPath(
     wpt1,
     wpt2,
-    vel,
-    phi_lim
+    turnRadius
 );
 assert.deepEqual(
     p1p2.toJSON(),
@@ -112,8 +110,7 @@ assert.deepEqual(
 let p2p3 = calcDubinsPath(
     wpt2,
     wpt3,
-    vel,
-    phi_lim
+    turnRadius
 );
 assert.deepEqual(
     p2p3.toJSON(),
@@ -182,8 +179,7 @@ assert.deepEqual(
 let p3p4 = calcDubinsPath(
     wpt3,
     wpt4,
-    vel,
-    phi_lim
+    turnRadius
 );
 assert.deepEqual(
     p3p4.toJSON(),
@@ -273,13 +269,11 @@ assert.deepEqual(
 
 
 // adding on some modifications in velocity and phi_lim
-let vel2 = 30;
-let phi_lim2 = 15;
+let turnRadius2 = 342.73935987877445;
 let p1p2SmallTurn = calcDubinsPath(
     wpt1,
     wpt2,
-    vel2,
-    phi_lim2
+    turnRadius2
 );
 assert.deepEqual(
     p1p2SmallTurn.toJSON(),

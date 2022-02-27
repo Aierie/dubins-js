@@ -234,10 +234,7 @@ export class DubinsPathSegment {
     }
 }
 
-
-export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, vel: number, phi_lim: number): DubinsPath {
-    let turnRadius = (vel * vel) / (9.8 * Math.tan(phi_lim * Math.PI / 180))
-
+export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, turnRadius: number): DubinsPath {
     wpt1 = {
         ...wpt1
     };
