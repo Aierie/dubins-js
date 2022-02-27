@@ -1,4 +1,5 @@
 import { assert } from 'chai';
+import { SEGMENT_TYPES } from '../src/best-segment';
 import { calcDubinsPath, Waypoint } from '../src/index';
 
 // currently just copying the python demo 
@@ -16,24 +17,41 @@ let p1p2 = calcDubinsPath(
     vel,
     phi_lim
 );
-// assert.deepEqual(
-//     p1p2,
-//     {
-//         p_init: { x: 0, y: 0, psi: 0 },
-//         seg_final: [1.518540974848893, 1.9228903638756734, 3.2638702268432223],
-//         turn_radius: 2270.8741936308616,
-//         mid_pt1: {
-//             x: 2152.2628610677675,
-//             y: 2267.7744497824783,
-//             psi: 0.052255351946003614
-//         },
-//         mid_pt2: {
-//             x: 6512.944497997953,
-//             y: 2495.8510382145046,
-//             psi: 0.052255351946003614
-//         },
-//     }
-// );
+assert.deepEqual(
+    p1p2.toJSON(),
+    {
+        maxSteps: 15226,
+        turnRadius: 2270.8741936308616,
+        segments: [
+            {
+                type: SEGMENT_TYPES.RIGHT,
+                turnRadius: 2270.8741936308616,
+                startPoint:  { x: 0, y: 0, psi: 1.5707963267948966 },
+                tprimeMax: 1.518540974848893, 
+            },
+            {
+                type: SEGMENT_TYPES.STRAIGHT,
+                turnRadius: 2270.8741936308616,
+                startPoint:  {
+                    x: 2152.2628610677675,
+                    y: 2267.7744497824783,
+                    psi: 0.052255351946003614
+                },
+                tprimeMax: 1.9228903638756734, 
+            },
+            {
+                type: SEGMENT_TYPES.LEFT,
+                turnRadius: 2270.8741936308616,
+                startPoint: {
+                    x: 6512.944497997953,
+                    y: 2495.8510382145046,
+                    psi: 0.052255351946003614
+                },
+                tprimeMax: 3.2638702268432223
+            },
+        ]
+    }
+);
 assert.deepEqual(
     p1p2.pointAtLength(2000),
     {
@@ -73,25 +91,41 @@ let p2p3 = calcDubinsPath(
     vel,
     phi_lim
 );
-// assert.deepEqual(
-//     p2p3,
-//     {
-//         turn_radius: 2270.8741936308616,
-//         seg_final: [2.1792794314612287, 1.8705235889691287, 3.5755428330566925],
-//         p_init: { y: 7000, x: 6000, psi: 260 },
-//         mid_pt1: {
-//             x: 3545.2755468033374,
-//             y: 10191.182002869044,
-//             psi: 1.1368461473279972
-//         },
-//         mid_pt2: {
-//             x: 5331.265481392665,
-//             y: 14045.192509133976,
-//             psi: 1.1368461473279972
-//         },
-//         segments: [3, 2, 1]
-//     }
-// );
+assert.deepEqual(
+    p2p3.toJSON(),
+    {
+        maxSteps: 17316,
+        turnRadius: 2270.8741936308616,
+        segments: [
+            {
+                type: SEGMENT_TYPES.RIGHT,
+                turnRadius: 2270.8741936308616,
+                startPoint: { y: 7000, x: 6000, psi: 3.3161255787892263 },
+                tprimeMax: 2.1792794314612287,
+            },
+            {
+                type: SEGMENT_TYPES.STRAIGHT,
+                turnRadius: 2270.8741936308616,
+                startPoint: {
+                    x: 3545.2755468033374,
+                    y: 10191.182002869044,
+                    psi: 1.1368461473279972
+                },
+                tprimeMax: 1.8705235889691287,
+            },
+            {
+                type: SEGMENT_TYPES.LEFT,
+                turnRadius: 2270.8741936308616,
+                startPoint: {
+                    x: 5331.265481392665,
+                    y: 14045.192509133976,
+                    psi: 1.1368461473279972
+                },
+                tprimeMax: 3.5755428330566925
+            },
+        ]
+    }
+);
 assert.deepEqual(
     p2p3.pointAtLength(2000),
     { x: 4132.014784126039, y: 7508.595811609, psi: 2.435407481058663 }
@@ -127,25 +161,41 @@ let p3p4 = calcDubinsPath(
     vel,
     phi_lim
 );
-// assert.deepEqual(
-//     p3p4,
-//     {
-//         p_init: { x: 1000, y: 15000, psi: 180 },
-//         seg_final: [0.10133129490561821, 5.430928410974976, 1.6721276217005148],
-//         turn_radius: 2270.8741936308616,
-//         mid_pt1: {
-//             x: 1011.6487310995047,
-//             y: 14770.282972445244,
-//             psi: 4.813720275290308
-//         },
-//         mid_pt2: {
-//             x: 2259.2254625313503,
-//             y: 2500.5912211856175,
-//             psi: 4.813720275290308
-//         },
-//         segments: [1, 2, 3]
-//     }
-// );
+assert.deepEqual(
+    p3p4.toJSON(),
+    {
+        maxSteps: 16360,
+        turnRadius: 2270.8741936308616,
+        segments: [
+            {
+                type: SEGMENT_TYPES.LEFT,
+                turnRadius: 2270.8741936308616,
+                startPoint: { x: 1000, y: 15000, psi: 4.71238898038469 },
+                tprimeMax: 0.10133129490561821,
+            },
+            {
+                type: SEGMENT_TYPES.STRAIGHT,
+                turnRadius: 2270.8741936308616,
+                startPoint: {
+                    x: 1011.6487310995047,
+                    y: 14770.282972445244,
+                    psi: 4.813720275290308
+                },
+                tprimeMax: 5.430928410974976,
+            },
+            {
+                type: SEGMENT_TYPES.RIGHT,
+                turnRadius: 2270.8741936308616,
+                startPoint: {
+                    x: 2259.2254625313503,
+                    y: 2500.5912211856175,
+                    psi: 4.813720275290308
+                },
+                tprimeMax: 1.6721276217005148,
+            },
+        ]
+    }
+);
 assert.deepEqual(
     p3p4.pointAtLength(2000),
     {
@@ -180,25 +230,41 @@ let p1p2SmallTurn = calcDubinsPath(
     vel2,
     phi_lim2
 );
-// assert.deepEqual(
-//     p1p2SmallTurn,
-//     {
-//         p_init: { x: 0, y: 0, psi: 0 },
-//         seg_final: [0.7873146081329452, 25.535876601172724, 2.5326438601272745],
-//         turn_radius: 342.73935987877445,
-//         mid_pt1: {
-//             x: 100.85093585224547,
-//             y: 242.8173369676765,
-//             psi: 0.7834817186619514
-//         },
-//         mid_pt2: {
-//             x: 6301.404489284209,
-//             y: 6419.6502841612655,
-//             psi: 0.7834817186619514
-//         },
-//         segments: [3, 2, 1]
-//     }
-// );
+assert.deepEqual(
+    p1p2SmallTurn.toJSON(),
+    {
+        maxSteps: 9890,
+        turnRadius: 342.73935987877445,
+        segments: [
+            {
+                type: SEGMENT_TYPES.RIGHT,
+                turnRadius: 342.73935987877445,
+                startPoint: { x: 0, y: 0, psi: 1.5707963267948966 },
+                tprimeMax: 0.7873146081329452,
+            },
+            {
+                type: SEGMENT_TYPES.STRAIGHT,
+                turnRadius: 342.73935987877445,
+                startPoint: {
+                    x: 100.85093585224547,
+                    y: 242.8173369676765,
+                    psi: 0.7834817186619514
+                },
+                tprimeMax: 25.535876601172724,
+            },
+            {
+                type: SEGMENT_TYPES.LEFT,
+                turnRadius: 342.73935987877445,
+                startPoint: {
+                    x: 6301.404489284209,
+                    y: 6419.6502841612655,
+                    psi: 0.7834817186619514
+                },
+                tprimeMax: 2.5326438601272745,
+            },
+        ]
+    }
+);
 assert.deepEqual(
     p1p2SmallTurn.pointAtLength(2000),
     {

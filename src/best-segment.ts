@@ -226,6 +226,14 @@ export class DubinsPath {
             return this.segments[2].pointAtLength((tprime - this.segments[0].tprimeMax - this.segments[1].tprimeMax));
         }
     }
+
+    toJSON() {
+        return {
+            segments: this.segments.map(segment => segment.toJSON()),
+            turnRadius: this.turnRadius,
+            maxSteps: this.maxSteps,
+        }
+    }
 }
 
 export class DubinsPathSegment {
@@ -260,5 +268,14 @@ export class DubinsPathSegment {
         point.psi = modulo(point.psi, (2 * Math.PI));
 
         return point;
+    }
+
+    toJSON() {
+        return {
+            type: this.type,
+            startPoint: this.startPoint,
+            turnRadius: this.turnRadius,
+            tprimeMax: this.tprimeMax,
+        }
     }
 }
