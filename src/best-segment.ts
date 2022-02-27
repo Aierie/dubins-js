@@ -144,6 +144,12 @@ const SEGMENT_ORDER: (keyof typeof PATH_TYPES)[] = [
 ];
 
 export function bestSegment(wpt1: Waypoint, wpt2: Waypoint, turn_radius: number) {
+    wpt1 = {
+        ...wpt1
+    };
+    wpt2 = {
+        ...wpt2
+    }
     let tz = [0, 0, 0, 0, 0, 0]
     let pz = [0, 0, 0, 0, 0, 0]
     let qz = [0, 0, 0, 0, 0, 0]
@@ -184,8 +190,75 @@ export function bestSegment(wpt1: Waypoint, wpt2: Waypoint, turn_radius: number)
             }
         }
     }
-    return {
-        seg_final: [tz[best_word], pz[best_word], qz[best_word]],
-        segments: PATH_TYPES[SEGMENT_ORDER[best_word]].segments,
+
+    const segments: DubinsPathSegment[] = [];
+    wpt1.psi = headingToStandard(wpt1.psi) * Math.PI / 180
+    let segmentStart = wpt1;
+    for (let i in PATH_TYPES[SEGMENT_ORDER[best_word]].segments) {
+        let type = PATH_TYPES[SEGMENT_ORDER[best_word]].segments[i]
+        let newSegment = new DubinsPathSegment(type, segmentStart, turn_radius, [tz, pz, qz][i][best_word]);
+        segments.push(newSegment);
+        segmentStart = newSegment.pointAt(newSegment.tprimeMax);
+    }
+
+    const maxSteps = (tz[best_word] + pz[best_word] + qz[best_word]) * turn_radius;
+
+    return new DubinsPath(segments, turn_radius, maxSteps);
+}
+
+export class DubinsPath {
+    constructor(
+        public segments: DubinsPathSegment[],
+        public turnRadius: number,
+        public maxSteps: number
+    ) { }
+
+    pointAt(step: number) {
+        if (step > this.maxSteps) {
+            throw new Error('step count too large');
+        }
+        let tprime = step / this.turnRadius;
+        if (tprime < this.segments[0].tprimeMax) {
+            return this.segments[0].pointAt(tprime);
+        } else if ((tprime - this.segments[0].tprimeMax) < this.segments[1].tprimeMax) {
+            return this.segments[1].pointAt((tprime - this.segments[0].tprimeMax));
+        } else {
+            return this.segments[2].pointAt((tprime - this.segments[0].tprimeMax - this.segments[1].tprimeMax));
+        }
+    }
+}
+
+export class DubinsPathSegment {
+    constructor(
+        public type: typeof SEGMENT_TYPES[keyof typeof SEGMENT_TYPES],
+        public startPoint: Waypoint,
+        public turnRadius: number,
+        public tprimeMax: number,
+    ) { }
+
+    pointAt(tprime: number): Waypoint {
+        const point: Waypoint = {
+            x: 0,
+            y: 0,
+            psi: 0
+        };
+
+        if (this.type == SEGMENT_TYPES.LEFT) {
+            point.x = this.startPoint.x + (Math.sin(this.startPoint.psi + tprime) - Math.sin(this.startPoint.psi)) * this.turnRadius
+            point.y = this.startPoint.y + (-Math.cos(this.startPoint.psi + tprime) + Math.cos(this.startPoint.psi)) * this.turnRadius
+            point.psi = this.startPoint.psi + tprime
+        } else if (this.type == SEGMENT_TYPES.RIGHT) {
+            point.x = this.startPoint.x + (-Math.sin(this.startPoint.psi - tprime) + Math.sin(this.startPoint.psi)) * this.turnRadius
+            point.y = this.startPoint.y + (Math.cos(this.startPoint.psi - tprime) - Math.cos(this.startPoint.psi)) * this.turnRadius
+            point.psi = this.startPoint.psi - tprime
+        } else if (this.type == SEGMENT_TYPES.STRAIGHT) {
+            point.x = this.startPoint.x + (Math.cos(this.startPoint.psi) * tprime) * this.turnRadius
+            point.y = this.startPoint.y + (Math.sin(this.startPoint.psi) * tprime) * this.turnRadius
+            point.psi = this.startPoint.psi
+        };
+
+        point.psi = modulo(point.psi, (2 * Math.PI));
+
+        return point;
     }
 }
