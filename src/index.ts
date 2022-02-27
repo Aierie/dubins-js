@@ -40,8 +40,8 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, vel: number, phi_
 
     param.seg_final = temp.seg_final as [number, number, number];
     param.segments = temp.segments;
-    const mid_pt1 = dubins_segment(param.seg_final[0], { x: 0, y: 0, psi: headingToStandard(param.p_init.psi) * Math.PI / 180 }, param.segments[0])//  * param.turn_radius + param.p_init.x
-    const mid_pt2 = dubins_segment(param.seg_final[1], mid_pt1, param.segments[1])// * param.turn_radius + param.p_init.y;
+    const mid_pt1 = dubins_segment(param.seg_final[0], { x: param.p_init.x, y: param.p_init.y, psi: headingToStandard(param.p_init.psi) * Math.PI / 180 }, param.segments[0], param.turn_radius);
+    const mid_pt2 = dubins_segment(param.seg_final[1], mid_pt1, param.segments[1], param.turn_radius);
 
     // precalculate this and expose it in the summarized param
     // because it is useful for rendering
@@ -75,7 +75,7 @@ function dubins_path(param: Param, t: number) {
     // Helper function for curve generation
     let tprime = t / param.turn_radius
     // a mock point for easier calculation. the paths get their start points added on later at the end_pt definition
-    const p_init: Waypoint = { x: 0, y: 0, psi: headingToStandard(param.p_init.psi) * Math.PI / 180 };
+    const p_init: Waypoint = { x: param.p_init.x, y: param.p_init.y, psi: headingToStandard(param.p_init.psi) * Math.PI / 180 };
     //
     const types = param.segments;
     const param1 = param.seg_final[0]
@@ -85,40 +85,38 @@ function dubins_path(param: Param, t: number) {
 
     let end_pt;
     if (tprime < param1) {
-        end_pt = dubins_segment(tprime, p_init, types[0])
+        end_pt = dubins_segment(tprime, p_init, types[0], param.turn_radius)
     } else if (tprime < (param1 + param2)) {
-        end_pt = dubins_segment(tprime - param1, mid_pt1, types[1])
+        end_pt = dubins_segment(tprime - param1, mid_pt1, types[1], param.turn_radius)
     } else {
-        end_pt = dubins_segment(tprime - param1 - param2, mid_pt2, types[2])
+        end_pt = dubins_segment(tprime - param1 - param2, mid_pt2, types[2], param.turn_radius)
     }
-
-    end_pt.x = end_pt.x * param.turn_radius + param.p_init.x
-    end_pt.y = end_pt.y * param.turn_radius + param.p_init.y
-    end_pt.psi = modulo(end_pt.psi, (2 * Math.PI));
 
     return end_pt
 }
 
-function dubins_segment(seg_param: number, seg_init: Waypoint, seg_type: number): Waypoint {
-    // Helper function for curve generation
+function dubins_segment(seg_param: number, seg_init: Waypoint, seg_type: number, turn_radius: number): Waypoint {
     const seg_end: Waypoint = {
         x: 0,
         y: 0,
         psi: 0
     };
+
     if (seg_type == SEGMENT_TYPES.LEFT) {
-        seg_end.x = seg_init.x + Math.sin(seg_init.psi + seg_param) - Math.sin(seg_init.psi)
-        seg_end.y = seg_init.y - Math.cos(seg_init.psi + seg_param) + Math.cos(seg_init.psi)
+        seg_end.x = seg_init.x + (Math.sin(seg_init.psi + seg_param) - Math.sin(seg_init.psi)) * turn_radius
+        seg_end.y = seg_init.y  + (-Math.cos(seg_init.psi + seg_param) + Math.cos(seg_init.psi)) * turn_radius
         seg_end.psi = seg_init.psi + seg_param
     } else if (seg_type == SEGMENT_TYPES.RIGHT) {
-        seg_end.x = seg_init.x - Math.sin(seg_init.psi - seg_param) + Math.sin(seg_init.psi)
-        seg_end.y = seg_init.y + Math.cos(seg_init.psi - seg_param) - Math.cos(seg_init.psi)
+        seg_end.x = seg_init.x + (-Math.sin(seg_init.psi - seg_param) + Math.sin(seg_init.psi)) * turn_radius
+        seg_end.y = seg_init.y + (Math.cos(seg_init.psi - seg_param) - Math.cos(seg_init.psi)) * turn_radius
         seg_end.psi = seg_init.psi - seg_param
     } else if (seg_type == SEGMENT_TYPES.STRAIGHT) {
-        seg_end.x = seg_init.x + Math.cos(seg_init.psi) * seg_param
-        seg_end.y = seg_init.y + Math.sin(seg_init.psi) * seg_param
+        seg_end.x = seg_init.x + (Math.cos(seg_init.psi) * seg_param) * turn_radius
+        seg_end.y = seg_init.y + (Math.sin(seg_init.psi) * seg_param) * turn_radius
         seg_end.psi = seg_init.psi
     };
+
+    seg_end.psi = modulo(seg_end.psi, (2 * Math.PI));
 
 
     return seg_end;
