@@ -101,7 +101,7 @@ const PATH_TYPES: Record<string, {
                 let p = modulo((2 * Math.PI - Math.acos(tmp_rlr)), (2 * Math.PI));
                 let t = modulo((alpha - Math.atan2((Math.cos(alpha) - Math.cos(beta)), d - Math.sin(alpha) + Math.sin(beta)) + modulo(p / 2, (2 * Math.PI))), (2 * Math.PI))
                 let q = modulo((alpha - beta - t + modulo(p, (2 * Math.PI))), (2 * Math.PI));
-        
+
                 return [t, p, q]
             }
         },
@@ -134,18 +134,36 @@ const SEGMENT_ORDER: (keyof typeof PATH_TYPES)[] = [
     'LRL'
 ];
 
+// https://github.com/manferlo81/map-number/blob/master/src/map.ts
+function map(num: number, inMin: number, inMax: number, outMin: number, outMax: number): number {
+    return (num - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+}
+
 export class DubinsPath {
     constructor(
         public segments: DubinsPathSegment[],
         public turnRadius: number,
     ) { }
 
-    get tprimeMax(){
+    get tprimeMax() {
         return this.segments[0].tprimeMax + this.segments[1].tprimeMax + this.segments[2].tprimeMax
     }
 
-    get length(){
+    get length() {
         return Math.floor(this.tprimeMax * this.turnRadius);
+    }
+
+    // TODO: good floating point solution would probably be good here
+    // 0 <= pos <= 1
+    pointAt(pos: number){
+        let tprime = map(pos, 0, 1, 0, this.tprimeMax);
+        if (tprime < this.segments[0].tprimeMax) {
+            return this.segments[0].pointAtLength(tprime);
+        } else if ((tprime - this.segments[0].tprimeMax) < this.segments[1].tprimeMax) {
+            return this.segments[1].pointAtLength((tprime - this.segments[0].tprimeMax));
+        } else {
+            return this.segments[2].pointAtLength((tprime - this.segments[0].tprimeMax - this.segments[1].tprimeMax));
+        }
     }
 
     pointAtLength(length: number) {

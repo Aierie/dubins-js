@@ -25,18 +25,18 @@ assert.deepEqual(
             {
                 type: SEGMENT_TYPES.RIGHT,
                 turnRadius: 2270.8741936308616,
-                startPoint:  { x: 0, y: 0, psi: 1.5707963267948966 },
-                tprimeMax: 1.518540974848893, 
+                startPoint: { x: 0, y: 0, psi: 1.5707963267948966 },
+                tprimeMax: 1.518540974848893,
             },
             {
                 type: SEGMENT_TYPES.STRAIGHT,
                 turnRadius: 2270.8741936308616,
-                startPoint:  {
+                startPoint: {
                     x: 2152.2628610677675,
                     y: 2267.7744497824783,
                     psi: 0.052255351946003614
                 },
-                tprimeMax: 1.9228903638756734, 
+                tprimeMax: 1.9228903638756734,
             },
             {
                 type: SEGMENT_TYPES.LEFT,
@@ -81,6 +81,31 @@ assert.deepEqual(
         x: 7627.5129832231305,
         y: 2856.75969819994,
         psi: 0.5740554530089739
+    }
+)
+// note that floating point is messing things up for pointAt
+assert.deepEqual(
+    p1p2.pointAt(0.1),
+    {
+        x: 491.6616670126776,
+        y: 1411.124512019954,
+        psi: 0.9002661702381172
+    }
+)
+assert.deepEqual(
+    p1p2.pointAt(0.5),
+    {
+        x: 6311.610221598213,
+        y: 2485.320658168689,
+        psi: 0.052255351946003614
+    }
+)
+assert.deepEqual(
+    p1p2.pointAt(0.9),
+    {
+        x: 7475.062512408255,
+        y: 6760.8469784404115,
+        psi: 2.6455954222324465
     }
 )
 
@@ -220,6 +245,33 @@ assert.deepEqual(
     { x: 1898.79295309506, y: 6045.379831374479, psi: 4.813720275290308 }
 )
 
+// note that floating point is messing things up for pointAt
+assert.deepEqual(
+    p3p4.pointAt(0.1),
+    {
+        x: 1153.86825146002,
+        y: 13371.579684806344,
+        psi: 4.813720275290308
+    }
+)
+assert.deepEqual(
+    p3p4.pointAt(0.5),
+    {
+        x: 1815.8564283580538,
+        y: 6861.045567842552,
+        psi: 4.813720275290308
+    }
+)
+assert.deepEqual(
+    p3p4.pointAt(0.9),
+    {
+        x: 1498.128520353223,
+        y: 564.2750784890368,
+        psi: 3.8620313863479048
+    }
+)
+
+
 // adding on some modifications in velocity and phi_lim
 let vel2 = 30;
 let phi_lim2 = 15;
@@ -293,6 +345,32 @@ assert.deepEqual(
     {
         x: 6285.822815528597,
         y: 6404.128219075186,
+        psi: 0.7834817186619514
+    }
+)
+
+// note that floating point is messing things up for pointAt
+assert.deepEqual(
+    p1p2SmallTurn.pointAt(0.1),
+    {
+        x: 610.3470021034736,
+        y: 750.3642940847923,
+        psi: 0.7834817186619514
+    },
+)
+assert.deepEqual(
+    p1p2SmallTurn.pointAt(0.5),
+    {
+        x: 3413.0258131187525,
+        y: 3542.3212816506248,
+        psi: 0.7834817186619514
+    }
+)
+assert.deepEqual(
+    p1p2SmallTurn.pointAt(0.9),
+    {
+        x: 6215.70462413403,
+        y: 6334.2782692164565,
         psi: 0.7834817186619514
     }
 )
