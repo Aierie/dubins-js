@@ -21,12 +21,12 @@ There should still be significant changes to come for this package, particularly
 - [x] Better (exported) types
 - [x] Easy API to lazily get a point from a Dubins path
       - [x] add pointAt
-- [ ] Way to set the turn radius directly?
 - [ ] Angles should only use radians and use the x axis as a base, as normal unit circles do
 - [ ] Renaming of functions and other variables to follow JS convention
+- [ ] Initial documentation
 - [ ] Utility functions to render on canvas + svg (separate module, optional import?)
+- [ ] Add pointAt, pointAtLength, on segments
 - [ ] Generalize DubinsPath so that segments can be tacked on
-- [ ] Documentation
 - [ ] increased floating point precision? this would be good for visual precision + asserting on results
 - [ ] Tests to ensure correctness as per paper
 
