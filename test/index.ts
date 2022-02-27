@@ -35,7 +35,7 @@ let p1p2 = calcDubinsPath(
 //     }
 // );
 assert.deepEqual(
-    p1p2.pointAt(2000),
+    p1p2.pointAtLength(2000),
     {
         x: 825.2413270673604,
         y: 1751.289587249924,
@@ -43,7 +43,7 @@ assert.deepEqual(
     }
 )
 assert.deepEqual(
-    p1p2.pointAt(4000),
+    p1p2.pointAtLength(4000),
     {
         x: 2703.094436346471,
         y: 2296.584575572502,
@@ -51,7 +51,7 @@ assert.deepEqual(
     }
 )
 assert.deepEqual(
-    p1p2.pointAt(6000),
+    p1p2.pointAtLength(6000),
     {
         x: 4700.364435840871,
         y: 2401.0477227567576,
@@ -59,7 +59,7 @@ assert.deepEqual(
     }
 )
 assert.deepEqual(
-    p1p2.pointAt(9000),
+    p1p2.pointAtLength(9000),
     {
         x: 7627.5129832231305,
         y: 2856.75969819994,
@@ -93,11 +93,11 @@ let p2p3 = calcDubinsPath(
 //     }
 // );
 assert.deepEqual(
-    p2p3.pointAt(2000),
+    p2p3.pointAtLength(2000),
     { x: 4132.014784126039, y: 7508.595811609, psi: 2.435407481058663 }
 )
 assert.deepEqual(
-    p2p3.pointAt(4000),
+    p2p3.pointAtLength(4000),
     {
         x: 3335.0872051310885,
         y: 9272.949772736742,
@@ -105,7 +105,7 @@ assert.deepEqual(
     }
 )
 assert.deepEqual(
-    p2p3.pointAt(6000),
+    p2p3.pointAtLength(6000),
     {
         x: 3987.231932117159,
         y: 11144.885335302437,
@@ -113,7 +113,7 @@ assert.deepEqual(
     }
 )
 assert.deepEqual(
-    p2p3.pointAt(9000),
+    p2p3.pointAtLength(9000),
     {
         x: 5248.606287698787,
         y: 13866.821178609738,
@@ -147,7 +147,7 @@ let p3p4 = calcDubinsPath(
 //     }
 // );
 assert.deepEqual(
-    p3p4.pointAt(2000),
+    p3p4.pointAtLength(2000),
     {
         x: 1190.687150759856,
         y: 13009.47246234222,
@@ -155,11 +155,11 @@ assert.deepEqual(
     }
 )
 assert.deepEqual(
-    p3p4.pointAt(4000),
+    p3p4.pointAtLength(4000),
     { x: 1393.0030942842, y: 11019.731710637152, psi: 4.813720275290308 }
 )
 assert.deepEqual(
-    p3p4.pointAt(6000),
+    p3p4.pointAtLength(6000),
     {
         x: 1595.3190378085442,
         y: 9029.990958932081,
@@ -167,7 +167,7 @@ assert.deepEqual(
     }
 )
 assert.deepEqual(
-    p3p4.pointAt(9000),
+    p3p4.pointAtLength(9000),
     { x: 1898.79295309506, y: 6045.379831374479, psi: 4.813720275290308 }
 )
 
@@ -200,7 +200,7 @@ let p1p2SmallTurn = calcDubinsPath(
 //     }
 // );
 assert.deepEqual(
-    p1p2SmallTurn.pointAt(2000),
+    p1p2SmallTurn.pointAtLength(2000),
     {
         x: 1326.5985251671968,
         y: 1463.8757520559677,
@@ -208,7 +208,7 @@ assert.deepEqual(
     }
 )
 assert.deepEqual(
-    p1p2SmallTurn.pointAt(4000),
+    p1p2SmallTurn.pointAtLength(4000),
     {
         x: 2743.51975098474,
         y: 2875.3764569186014,
@@ -216,7 +216,7 @@ assert.deepEqual(
     }
 )
 assert.deepEqual(
-    p1p2SmallTurn.pointAt(6000),
+    p1p2SmallTurn.pointAtLength(6000),
     {
         x: 4160.440976802282,
         y: 4286.8771617812345,
@@ -224,7 +224,7 @@ assert.deepEqual(
     }
 )
 assert.deepEqual(
-    p1p2SmallTurn.pointAt(9000),
+    p1p2SmallTurn.pointAtLength(9000),
     {
         x: 6285.822815528597,
         y: 6404.128219075186,

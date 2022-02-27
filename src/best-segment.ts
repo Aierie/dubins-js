@@ -198,7 +198,7 @@ export function bestSegment(wpt1: Waypoint, wpt2: Waypoint, turn_radius: number)
         let type = PATH_TYPES[SEGMENT_ORDER[best_word]].segments[i]
         let newSegment = new DubinsPathSegment(type, segmentStart, turn_radius, [tz, pz, qz][i][best_word]);
         segments.push(newSegment);
-        segmentStart = newSegment.pointAt(newSegment.tprimeMax);
+        segmentStart = newSegment.pointAtLength(newSegment.tprimeMax);
     }
 
     const maxSteps = (tz[best_word] + pz[best_word] + qz[best_word]) * turn_radius;
@@ -213,17 +213,17 @@ export class DubinsPath {
         public maxSteps: number
     ) { }
 
-    pointAt(step: number) {
+    pointAtLength(step: number) {
         if (step > this.maxSteps) {
             throw new Error('step count too large');
         }
         let tprime = step / this.turnRadius;
         if (tprime < this.segments[0].tprimeMax) {
-            return this.segments[0].pointAt(tprime);
+            return this.segments[0].pointAtLength(tprime);
         } else if ((tprime - this.segments[0].tprimeMax) < this.segments[1].tprimeMax) {
-            return this.segments[1].pointAt((tprime - this.segments[0].tprimeMax));
+            return this.segments[1].pointAtLength((tprime - this.segments[0].tprimeMax));
         } else {
-            return this.segments[2].pointAt((tprime - this.segments[0].tprimeMax - this.segments[1].tprimeMax));
+            return this.segments[2].pointAtLength((tprime - this.segments[0].tprimeMax - this.segments[1].tprimeMax));
         }
     }
 }
@@ -236,7 +236,7 @@ export class DubinsPathSegment {
         public tprimeMax: number,
     ) { }
 
-    pointAt(tprime: number): Waypoint {
+    pointAtLength(tprime: number): Waypoint {
         const point: Waypoint = {
             x: 0,
             y: 0,
