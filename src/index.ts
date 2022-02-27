@@ -140,6 +140,120 @@ export class DubinsPath {
         public turnRadius: number,
     ) { }
 
+    // TODO: test curves method and make it public
+    private curves(wpt1: Waypoint, wpt2: Waypoint, turnRadius: number): DubinsPath[] {
+        throw new Error('Untested! Please test this before allowing use in the API.');
+        wpt1 = {
+            ...wpt1
+        };
+        wpt2 = {
+            ...wpt2
+        }
+        let tz = [0, 0, 0, 0, 0, 0]
+        let pz = [0, 0, 0, 0, 0, 0]
+        let qz = [0, 0, 0, 0, 0, 0]
+        // Convert the headings from NED to standard unit cirlce, and then to radians
+        let psi1 = wpt1.psi
+        let psi2 = wpt2.psi
+
+        // we could also directly do the turn radius as an argument
+        let dx = wpt2.x - wpt1.x
+        let dy = wpt2.y - wpt1.y
+        let D = Math.sqrt(dx * dx + dy * dy)
+        let d = D / turnRadius // Normalize by turn radius...makes length calculation easier down the road.
+
+        // Angles defined in the paper
+        let theta = modulo(Math.atan2(dy, dx), (2 * Math.PI));
+        let alpha = modulo((psi1 - theta), (2 * Math.PI));
+        let beta = modulo((psi2 - theta), (2 * Math.PI));
+        let bestWord = -1
+        let bestCost = -1
+
+        // Calculate all dubin's paths between points
+        let orderedFns = SEGMENT_ORDER.map(key => PATH_TYPES[key].calc);
+        for (let i = 0; i < orderedFns.length; i++) {
+            const [t, p, q] = orderedFns[i](alpha, beta, d);
+            tz[i] = t;
+            pz[i] = p;
+            qz[i] = q;
+        }
+
+        let curves: DubinsPath[] = [];
+        // Now, pick the one with the lowest cost
+        for (let x = 0; x < 6; x++) {
+            if (tz[x] === -1) {
+                continue;
+            }
+
+            const segments: DubinsPathSegment[] = [];
+            let segmentStart = wpt1;
+            for (let i in PATH_TYPES[SEGMENT_ORDER[bestWord]].segments) {
+                let type = PATH_TYPES[SEGMENT_ORDER[bestWord]].segments[i]
+                let newSegment = new DubinsPathSegment(type, segmentStart, turnRadius, [tz, pz, qz][i][bestWord]);
+                segments.push(newSegment);
+                segmentStart = newSegment.pointAtLength(newSegment.tprimeMax);
+            }
+            curves.push(new DubinsPath(segments, turnRadius));
+        }
+
+        return curves;
+    }
+
+    static path(wpt1: Waypoint, wpt2: Waypoint, turnRadius: number): DubinsPath {
+        let tz = [0, 0, 0, 0, 0, 0]
+        let pz = [0, 0, 0, 0, 0, 0]
+        let qz = [0, 0, 0, 0, 0, 0]
+        // Convert the headings from NED to standard unit cirlce, and then to radians
+        let psi1 = wpt1.psi
+        let psi2 = wpt2.psi
+
+        // we could also directly do the turn radius as an argument
+        let dx = wpt2.x - wpt1.x
+        let dy = wpt2.y - wpt1.y
+        let D = Math.sqrt(dx * dx + dy * dy)
+        let d = D / turnRadius // Normalize by turn radius...makes length calculation easier down the road.
+
+        // Angles defined in the paper
+        let theta = modulo(Math.atan2(dy, dx), (2 * Math.PI));
+        let alpha = modulo((psi1 - theta), (2 * Math.PI));
+        let beta = modulo((psi2 - theta), (2 * Math.PI));
+        let bestWord = -1
+        let bestCost = -1
+
+        // Calculate all dubin's paths between points
+        let orderedFns = SEGMENT_ORDER.map(key => PATH_TYPES[key].calc);
+        for (let i = 0; i < orderedFns.length; i++) {
+            const [t, p, q] = orderedFns[i](alpha, beta, d);
+            tz[i] = t;
+            pz[i] = p;
+            qz[i] = q;
+        }
+
+        let cost;
+        // Now, pick the one with the lowest cost
+        for (let x = 0; x < 6; x++) {
+            if (tz[x] != -1) {
+                cost = tz[x] + pz[x] + qz[x]
+                if (cost < bestCost || bestCost == -1) {
+                    bestWord = x
+                    bestCost = cost
+                }
+            }
+        }
+
+        const segments: DubinsPathSegment[] = [];
+        let segmentStart = wpt1;
+        for (let i in PATH_TYPES[SEGMENT_ORDER[bestWord]].segments) {
+            let type = PATH_TYPES[SEGMENT_ORDER[bestWord]].segments[i]
+            let newSegment = new DubinsPathSegment(type, segmentStart, turnRadius, [tz, pz, qz][i][bestWord]);
+            segments.push(newSegment);
+            segmentStart = newSegment.pointAtLength(newSegment.tprimeMax);
+        }
+
+        return new DubinsPath(segments, turnRadius);
+    }
+
+
     get tprimeMax() {
         return this.segments[0].tprimeMax + this.segments[1].tprimeMax + this.segments[2].tprimeMax
     }
@@ -150,7 +264,7 @@ export class DubinsPath {
 
     // TODO: good floating point solution would probably be good here
     // 0 <= pos <= 1
-    pointAt(pos: number){
+    pointAt(pos: number) {
         let tprime = map(pos, 0, 1, 0, this.tprimeMax);
         if (tprime < this.segments[0].tprimeMax) {
             return this.segments[0].pointAtLength(tprime);
@@ -227,65 +341,4 @@ export class DubinsPathSegment {
             tprimeMax: this.tprimeMax,
         }
     }
-}
-
-export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, turnRadius: number): DubinsPath {
-    wpt1 = {
-        ...wpt1
-    };
-    wpt2 = {
-        ...wpt2
-    }
-    let tz = [0, 0, 0, 0, 0, 0]
-    let pz = [0, 0, 0, 0, 0, 0]
-    let qz = [0, 0, 0, 0, 0, 0]
-    // Convert the headings from NED to standard unit cirlce, and then to radians
-    let psi1 = wpt1.psi
-    let psi2 = wpt2.psi
-
-    // we could also directly do the turn radius as an argument
-    let dx = wpt2.x - wpt1.x
-    let dy = wpt2.y - wpt1.y
-    let D = Math.sqrt(dx * dx + dy * dy)
-    let d = D / turnRadius // Normalize by turn radius...makes length calculation easier down the road.
-
-    // Angles defined in the paper
-    let theta = modulo(Math.atan2(dy, dx), (2 * Math.PI));
-    let alpha = modulo((psi1 - theta), (2 * Math.PI));
-    let beta = modulo((psi2 - theta), (2 * Math.PI));
-    let bestWord = -1
-    let bestCost = -1
-
-    // Calculate all dubin's paths between points
-    let orderedFns = SEGMENT_ORDER.map(key => PATH_TYPES[key].calc);
-    for (let i = 0; i < orderedFns.length; i++) {
-        const [t, p, q] = orderedFns[i](alpha, beta, d);
-        tz[i] = t;
-        pz[i] = p;
-        qz[i] = q;
-    }
-
-    let cost;
-    // Now, pick the one with the lowest cost
-    for (let x = 0; x < 6; x++) {
-        if (tz[x] != -1) {
-            cost = tz[x] + pz[x] + qz[x]
-            if (cost < bestCost || bestCost == -1) {
-                bestWord = x
-                bestCost = cost
-            }
-        }
-    }
-
-    const segments: DubinsPathSegment[] = [];
-    wpt1.psi = wpt1.psi
-    let segmentStart = wpt1;
-    for (let i in PATH_TYPES[SEGMENT_ORDER[bestWord]].segments) {
-        let type = PATH_TYPES[SEGMENT_ORDER[bestWord]].segments[i]
-        let newSegment = new DubinsPathSegment(type, segmentStart, turnRadius, [tz, pz, qz][i][bestWord]);
-        segments.push(newSegment);
-        segmentStart = newSegment.pointAtLength(newSegment.tprimeMax);
-    }
-
-    return new DubinsPath(segments, turnRadius);
 }
