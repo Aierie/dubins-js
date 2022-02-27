@@ -1,6 +1,5 @@
 import { assert } from 'chai';
-import { SEGMENT_TYPES } from '../src/best-segment';
-import { calcDubinsPath, Waypoint } from '../src/index';
+import { SEGMENT_TYPES, calcDubinsPath, Waypoint } from '../src/index';
 
 // currently just copying the python demo 
 // accepting floating point differences for now
