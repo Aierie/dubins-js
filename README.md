@@ -18,17 +18,17 @@ The paper: https://cpb-us-e2.wpmucdn.com/faculty.sites.uci.edu/dist/e/700/files/
 # This is WIP
 There should still be significant changes to come for this package, particularly:
 - [x] Restructure so that midpoints (and segments) are easily accessible
-- [ ] Better (exported) types
-- [ ] Easy API to lazily get a point from a Dubins path
-      - [ ] add map*
+- [x] Better (exported) types
+- [x] Easy API to lazily get a point from a Dubins path
+      - [x] add pointAt
 - [ ] Way to set the turn radius directly?
 - [ ] Angles should only use radians and use the x axis as a base, as normal unit circles do
-- [ ] Generalize so that segments can be tacked on
 - [ ] Renaming of functions and other variables to follow JS convention
-- [ ] Tests to ensure correctness as per paper
 - [ ] Utility functions to render on canvas + svg (separate module, optional import?)
+- [ ] Generalize DubinsPath so that segments can be tacked on
 - [ ] Documentation
-- [ ] Evaluate necessity of increased floating point precision
+- [ ] increased floating point precision? this would be good for visual precision + asserting on results
+- [ ] Tests to ensure correctness as per paper
 
 # How does this work?
 Coming soon!
