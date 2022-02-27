@@ -22,7 +22,7 @@ There should still be significant changes to come for this package, particularly
 - [x] Easy API to lazily get a point from a Dubins path
       - [x] add pointAt
 - [x] Angles should only use radians and use the x axis as a base, as normal unit circles do
-- [ ] Renaming of functions and other variables to follow JS convention
+- [x] Renaming of functions and other variables to follow JS convention
 - [ ] Initial documentation
 - [ ] Utility functions to render on canvas + svg (separate module, optional import?)
 - [ ] Add pointAt, pointAtLength, on segments

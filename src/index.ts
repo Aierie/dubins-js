@@ -20,14 +20,14 @@ const PATH_TYPES: Record<string, {
         calc: function LSL(alpha, beta, d) {
             let tmp0 = d + Math.sin(alpha) - Math.sin(beta)
             let tmp1 = Math.atan2((Math.cos(beta) - Math.cos(alpha)), tmp0)
-            let p_squared = 2 + d * d - (2 * Math.cos(alpha - beta)) + (2 * d * (Math.sin(alpha) - Math.sin(beta)))
-            if (p_squared < 0) {
+            let pSquared = 2 + d * d - (2 * Math.cos(alpha - beta)) + (2 * d * (Math.sin(alpha) - Math.sin(beta)))
+            if (pSquared < 0) {
                 console.log('No LSL Path')
                 return [-1, -1, -1];
             } else {
                 return [
                     modulo((tmp1 - alpha), (2 * Math.PI)),
-                    Math.sqrt(p_squared),
+                    Math.sqrt(pSquared),
                     modulo((beta - tmp1), (2 * Math.PI))
                 ];
             }
@@ -37,12 +37,12 @@ const PATH_TYPES: Record<string, {
     LSR: {
         calc: function LSR(alpha, beta, d) {
             let tmp0 = d + Math.sin(alpha) + Math.sin(beta)
-            let p_squared = -2 + d * d + 2 * Math.cos(alpha - beta) + 2 * d * (Math.sin(alpha) + Math.sin(beta))
-            if (p_squared < 0) {
+            let pSquared = -2 + d * d + 2 * Math.cos(alpha - beta) + 2 * d * (Math.sin(alpha) + Math.sin(beta))
+            if (pSquared < 0) {
                 console.log('No LSR Path')
                 return [-1, -1, -1];
             } else {
-                let p = Math.sqrt(p_squared)
+                let p = Math.sqrt(pSquared)
                 let tmp2 = Math.atan2((-1 * Math.cos(alpha) - Math.cos(beta)), tmp0) - Math.atan2(-2, p)
                 let t = modulo((tmp2 - alpha), (2 * Math.PI));
                 let q = modulo((tmp2 - beta), (2 * Math.PI));
@@ -54,12 +54,12 @@ const PATH_TYPES: Record<string, {
     RSL: {
         calc: function RSL(alpha, beta, d) {
             let tmp0 = d - Math.sin(alpha) - Math.sin(beta)
-            let p_squared = -2 + d * d + 2 * Math.cos(alpha - beta) - 2 * d * (Math.sin(alpha) + Math.sin(beta))
-            if (p_squared < 0) {
+            let pSquared = -2 + d * d + 2 * Math.cos(alpha - beta) - 2 * d * (Math.sin(alpha) + Math.sin(beta))
+            if (pSquared < 0) {
                 console.log('No RSL Path')
                 return [-1, -1, -1];
             } else {
-                let p = Math.sqrt(p_squared)
+                let p = Math.sqrt(pSquared)
                 let tmp2 = Math.atan2((Math.cos(alpha) + Math.cos(beta)), tmp0) - Math.atan2(2, p)
                 let t = modulo((alpha - tmp2), (2 * Math.PI));
                 let q = modulo((beta - tmp2), (2 * Math.PI));
@@ -72,13 +72,13 @@ const PATH_TYPES: Record<string, {
         calc: function RSR(alpha, beta, d) {
             let tmp0 = d - Math.sin(alpha) + Math.sin(beta)
             let tmp1 = Math.atan2((Math.cos(alpha) - Math.cos(beta)), tmp0)
-            let p_squared = 2 + d * d - (2 * Math.cos(alpha - beta)) + 2 * d * (Math.sin(beta) - Math.sin(alpha))
-            if (p_squared < 0) {
+            let pSquared = 2 + d * d - (2 * Math.cos(alpha - beta)) + 2 * d * (Math.sin(beta) - Math.sin(alpha))
+            if (pSquared < 0) {
                 console.log('No RSR Path')
                 return [-1, -1, -1];
             } else {
                 let t = modulo((alpha - tmp1), (2 * Math.PI));
-                let p = Math.sqrt(p_squared);
+                let p = Math.sqrt(pSquared);
                 let q = modulo((-1 * beta + tmp1), (2 * Math.PI));
                 return [t, p, q]
             }
@@ -87,13 +87,13 @@ const PATH_TYPES: Record<string, {
     },
     RLR: {
         calc: function RLR(alpha, beta, d) {
-            let tmp_rlr = (6 - d * d + 2 * Math.cos(alpha - beta) + 2 * d * (Math.sin(alpha) - Math.sin(beta))) / 8
-            if (Math.abs(tmp_rlr) > 1) {
+            let tmpRlr = (6 - d * d + 2 * Math.cos(alpha - beta) + 2 * d * (Math.sin(alpha) - Math.sin(beta))) / 8
+            if (Math.abs(tmpRlr) > 1) {
                 console.log('No RLR Path')
                 return [-1, -1, -1];
             }
             else {
-                let p = modulo((2 * Math.PI - Math.acos(tmp_rlr)), (2 * Math.PI));
+                let p = modulo((2 * Math.PI - Math.acos(tmpRlr)), (2 * Math.PI));
                 let t = modulo((alpha - Math.atan2((Math.cos(alpha) - Math.cos(beta)), d - Math.sin(alpha) + Math.sin(beta)) + modulo(p / 2, (2 * Math.PI))), (2 * Math.PI))
                 let q = modulo((alpha - beta - t + modulo(p, (2 * Math.PI))), (2 * Math.PI));
 
@@ -104,12 +104,12 @@ const PATH_TYPES: Record<string, {
     },
     LRL: {
         calc: function LRL(alpha, beta, d) {
-            let tmp_lrl = (6 - d * d + 2 * Math.cos(alpha - beta) + 2 * d * (-1 * Math.sin(alpha) + Math.sin(beta))) / 8
-            if (Math.abs(tmp_lrl) > 1) {
+            let tmpLrl = (6 - d * d + 2 * Math.cos(alpha - beta) + 2 * d * (-1 * Math.sin(alpha) + Math.sin(beta))) / 8
+            if (Math.abs(tmpLrl) > 1) {
                 console.log('No LRL Path')
                 return [-1, -1, -1];
             } else {
-                let p = modulo((2 * Math.PI - Math.acos(tmp_lrl)), (2 * Math.PI));
+                let p = modulo((2 * Math.PI - Math.acos(tmpLrl)), (2 * Math.PI));
                 let t = modulo((-1 * alpha - Math.atan2((Math.cos(alpha) - Math.cos(beta)), d + Math.sin(alpha) - Math.sin(beta)) + p / 2), (2 * Math.PI));
                 let q = modulo((modulo(beta, (2 * Math.PI)) - alpha - t + modulo(p, (2 * Math.PI))), (2 * Math.PI))
                 return [t, p, q]
@@ -253,8 +253,8 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, turnRadius: numbe
     let theta = modulo(Math.atan2(dy, dx), (2 * Math.PI));
     let alpha = modulo((psi1 - theta), (2 * Math.PI));
     let beta = modulo((psi2 - theta), (2 * Math.PI));
-    let best_word = -1
-    let best_cost = -1
+    let bestWord = -1
+    let bestCost = -1
 
     // Calculate all dubin's paths between points
     let orderedFns = SEGMENT_ORDER.map(key => PATH_TYPES[key].calc);
@@ -270,9 +270,9 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, turnRadius: numbe
     for (let x = 0; x < 6; x++) {
         if (tz[x] != -1) {
             cost = tz[x] + pz[x] + qz[x]
-            if (cost < best_cost || best_cost == -1) {
-                best_word = x
-                best_cost = cost
+            if (cost < bestCost || bestCost == -1) {
+                bestWord = x
+                bestCost = cost
             }
         }
     }
@@ -280,9 +280,9 @@ export function calcDubinsPath(wpt1: Waypoint, wpt2: Waypoint, turnRadius: numbe
     const segments: DubinsPathSegment[] = [];
     wpt1.psi = wpt1.psi
     let segmentStart = wpt1;
-    for (let i in PATH_TYPES[SEGMENT_ORDER[best_word]].segments) {
-        let type = PATH_TYPES[SEGMENT_ORDER[best_word]].segments[i]
-        let newSegment = new DubinsPathSegment(type, segmentStart, turnRadius, [tz, pz, qz][i][best_word]);
+    for (let i in PATH_TYPES[SEGMENT_ORDER[bestWord]].segments) {
+        let type = PATH_TYPES[SEGMENT_ORDER[bestWord]].segments[i]
+        let newSegment = new DubinsPathSegment(type, segmentStart, turnRadius, [tz, pz, qz][i][bestWord]);
         segments.push(newSegment);
         segmentStart = newSegment.pointAtLength(newSegment.tprimeMax);
     }

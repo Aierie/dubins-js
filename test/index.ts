@@ -1,8 +1,7 @@
 import { assert } from 'chai';
 import { SEGMENT_TYPES, calcDubinsPath, Waypoint } from '../src/index';
 
-// currently just copying the python demo 
-// accepting floating point differences for now
+
 let wpt1: Waypoint = { x: 0, y: 0, psi: 1.5707963267948966 };
 let wpt2: Waypoint = { x: 6000, y: 7000, psi: 3.3161255787892263 };
 let wpt3: Waypoint = { x: 1000, y: 15000, psi: 4.71238898038469 };
@@ -268,7 +267,6 @@ assert.deepEqual(
 )
 
 
-// adding on some modifications in velocity and phi_lim
 let turnRadius2 = 342.73935987877445;
 let p1p2SmallTurn = calcDubinsPath(
     wpt1,
