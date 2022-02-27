@@ -23,11 +23,12 @@ There should still be significant changes to come for this package, particularly
       - [ ] add map*
 - [ ] Way to set the turn radius directly?
 - [ ] Angles should only use radians and use the x axis as a base, as normal unit circles do
+- [ ] Generalize so that segments can be tacked on
 - [ ] Renaming of functions and other variables to follow JS convention
 - [ ] Tests to ensure correctness as per paper
 - [ ] Utility functions to render on canvas + svg (separate module, optional import?)
 - [ ] Documentation
 - [ ] Evaluate necessity of increased floating point precision
 
-# ELI5 how does this work?
+# How does this work?
 Coming soon!
