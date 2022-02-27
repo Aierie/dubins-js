@@ -20,7 +20,7 @@ There should still be significant changes to come for this package, particularly
 - [x] Restructure so that midpoints (and segments) are easily accessible
 - [ ] Better (exported) types
 - [ ] Easy API to lazily get a point from a Dubins path
-      - [ ] add lerp
+      - [ ] add map*
 - [ ] Way to set the turn radius directly?
 - [ ] Angles should only use radians and use the x axis as a base, as normal unit circles do
 - [ ] Renaming of functions and other variables to follow JS convention
