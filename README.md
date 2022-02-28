@@ -25,6 +25,7 @@ There should still be significant changes to come for this package, particularly
 - [x] Renaming of functions and other variables to follow JS convention
 - [x] Add pointAt, pointAtLength, on segments
 - [ ] Initial documentation
+- [ ] Mathematical reasoning, granular unit tests
 - [ ] Utility functions to render on canvas + svg (separate module, optional import?)
 - [ ] Generalize DubinsPath so that segments can be tacked on
 - [ ] increased floating point precision? this would be good for visual precision + asserting on results
