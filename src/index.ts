@@ -309,15 +309,39 @@ export class Segment {
         return Math.floor(this.tprimeMax * this.turnRadius);
     }
 
-    // get center(): {
-    //     x: number;
-    //     y: number;
-    // } {
-    //     return {
-    //         x: 3,
-    //         y: 3,
-    //     }
-    // }
+    get center(): {
+        x: number;
+        y: number;
+    } {
+        let result = {
+            x: this.startPoint.x,
+            y: this.startPoint.y,
+        };
+
+        if (this.type === SEGMENT_TYPES.STRAIGHT) {
+            let endPoint = this.absolutePointAt(this.tprimeMax);
+            result.x += endPoint.x;
+            result.x /= 2;
+            result.y += endPoint.y;
+            result.y /= 2;
+        } else {
+            let angleFromCenter = this.startPoint.psi + Math.PI / 2 * (this.type === SEGMENT_TYPES.LEFT ? -1 : 1);
+            result.x -= Math.cos(angleFromCenter) * this.turnRadius;
+            result.y -= Math.sin(angleFromCenter) * this.turnRadius;
+        }
+
+        return result;
+    }
+
+    get arcAngles(){
+        if (this.type === SEGMENT_TYPES.STRAIGHT) return undefined;
+        let start = this.startPoint.psi + Math.PI / 2 * (this.type === SEGMENT_TYPES.LEFT ? -1 : 1);
+        let end = this.absolutePointAt(this.tprimeMax).psi + Math.PI / 2 * (this.type === SEGMENT_TYPES.LEFT ? -1 : 1);
+        return {
+            start,
+            end,
+        }
+    }
 
     // TODO: good floating point solution would probably be good here
     // 0 <= pos <= 1
@@ -371,6 +395,8 @@ export class Segment {
             turnRadius: this.turnRadius,
             tprimeMax: this.tprimeMax,
             length: this.length,
+            center: this.center,
+            arcAngles: this.arcAngles,
         }
     }
 }
