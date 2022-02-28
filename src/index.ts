@@ -292,6 +292,7 @@ export class Dubins {
             segments: this.segments.map(segment => segment.toObject()),
             turnRadius: this.turnRadius,
             length: this.length,
+            tprimeMax: this.tprimeMax,
         }
     }
 }

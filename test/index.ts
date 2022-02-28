@@ -18,6 +18,7 @@ assert.deepEqual(
     {
         length: 15226,
         turnRadius: 2270.8741936308616,
+        tprimeMax: 6.705301565567789,
         segments: [
             {
                 type: SEGMENT_TYPES.RIGHT,
@@ -116,6 +117,7 @@ assert.deepEqual(
     {
         length: 17316,
         turnRadius: 2270.8741936308616,
+        tprimeMax: 7.62534585348705,
         segments: [
             {
                 type: SEGMENT_TYPES.RIGHT,
@@ -185,6 +187,7 @@ assert.deepEqual(
     {
         length: 16360,
         turnRadius: 2270.8741936308616,
+        tprimeMax: 7.204387327581109,
         segments: [
             {
                 type: SEGMENT_TYPES.LEFT,
@@ -278,6 +281,7 @@ assert.deepEqual(
     {
         length: 9890,
         turnRadius: 342.73935987877445,
+        tprimeMax: 28.855835069432942,
         segments: [
             {
                 type: SEGMENT_TYPES.RIGHT,
