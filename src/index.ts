@@ -287,9 +287,9 @@ export class Dubins {
         }
     }
 
-    toJSON() {
+    toObject() {
         return {
-            segments: this.segments.map(segment => segment.toJSON()),
+            segments: this.segments.map(segment => segment.toObject()),
             turnRadius: this.turnRadius,
             length: this.length,
         }
@@ -353,7 +353,7 @@ export class Segment {
         return point;
     }
 
-    toJSON() {
+    toObject() {
         return {
             type: this.type,
             startPoint: this.startPoint,

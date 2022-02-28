@@ -14,7 +14,7 @@ let p1p2 = Dubins.path(
     turnRadius
 );
 assert.deepEqual(
-    p1p2.toJSON(),
+    p1p2.toObject(),
     {
         length: 15226,
         turnRadius: 2270.8741936308616,
@@ -112,7 +112,7 @@ let p2p3 = Dubins.path(
     turnRadius
 );
 assert.deepEqual(
-    p2p3.toJSON(),
+    p2p3.toObject(),
     {
         length: 17316,
         turnRadius: 2270.8741936308616,
@@ -181,7 +181,7 @@ let p3p4 = Dubins.path(
     turnRadius
 );
 assert.deepEqual(
-    p3p4.toJSON(),
+    p3p4.toObject(),
     {
         length: 16360,
         turnRadius: 2270.8741936308616,
@@ -274,7 +274,7 @@ let p1p2SmallTurn = Dubins.path(
     turnRadius2
 );
 assert.deepEqual(
-    p1p2SmallTurn.toJSON(),
+    p1p2SmallTurn.toObject(),
     {
         length: 9890,
         turnRadius: 342.73935987877445,
