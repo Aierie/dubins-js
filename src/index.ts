@@ -22,7 +22,6 @@ const PATH_TYPES: Record<string, {
             let tmp1 = Math.atan2((Math.cos(beta) - Math.cos(alpha)), tmp0)
             let pSquared = 2 + d * d - (2 * Math.cos(alpha - beta)) + (2 * d * (Math.sin(alpha) - Math.sin(beta)))
             if (pSquared < 0) {
-                console.log('No LSL Path')
                 return [-1, -1, -1];
             } else {
                 return [
@@ -39,7 +38,6 @@ const PATH_TYPES: Record<string, {
             let tmp0 = d + Math.sin(alpha) + Math.sin(beta)
             let pSquared = -2 + d * d + 2 * Math.cos(alpha - beta) + 2 * d * (Math.sin(alpha) + Math.sin(beta))
             if (pSquared < 0) {
-                console.log('No LSR Path')
                 return [-1, -1, -1];
             } else {
                 let p = Math.sqrt(pSquared)
@@ -56,7 +54,6 @@ const PATH_TYPES: Record<string, {
             let tmp0 = d - Math.sin(alpha) - Math.sin(beta)
             let pSquared = -2 + d * d + 2 * Math.cos(alpha - beta) - 2 * d * (Math.sin(alpha) + Math.sin(beta))
             if (pSquared < 0) {
-                console.log('No RSL Path')
                 return [-1, -1, -1];
             } else {
                 let p = Math.sqrt(pSquared)
@@ -74,7 +71,6 @@ const PATH_TYPES: Record<string, {
             let tmp1 = Math.atan2((Math.cos(alpha) - Math.cos(beta)), tmp0)
             let pSquared = 2 + d * d - (2 * Math.cos(alpha - beta)) + 2 * d * (Math.sin(beta) - Math.sin(alpha))
             if (pSquared < 0) {
-                console.log('No RSR Path')
                 return [-1, -1, -1];
             } else {
                 let t = modulo((alpha - tmp1), (2 * Math.PI));
@@ -89,7 +85,6 @@ const PATH_TYPES: Record<string, {
         calc: function RLR(alpha, beta, d) {
             let tmpRlr = (6 - d * d + 2 * Math.cos(alpha - beta) + 2 * d * (Math.sin(alpha) - Math.sin(beta))) / 8
             if (Math.abs(tmpRlr) > 1) {
-                console.log('No RLR Path')
                 return [-1, -1, -1];
             }
             else {
@@ -106,7 +101,6 @@ const PATH_TYPES: Record<string, {
         calc: function LRL(alpha, beta, d) {
             let tmpLrl = (6 - d * d + 2 * Math.cos(alpha - beta) + 2 * d * (-1 * Math.sin(alpha) + Math.sin(beta))) / 8
             if (Math.abs(tmpLrl) > 1) {
-                console.log('No LRL Path')
                 return [-1, -1, -1];
             } else {
                 let p = modulo((2 * Math.PI - Math.acos(tmpLrl)), (2 * Math.PI));
