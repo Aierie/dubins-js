@@ -191,7 +191,7 @@ export class Dubins {
                 let type = PATH_TYPES[SEGMENT_ORDER[bestWord]].segments[i]
                 let newSegment = new Segment(type, segmentStart, turnRadius, [tz, pz, qz][i][bestWord]);
                 segments.push(newSegment);
-                segmentStart = newSegment.pointAtLength(newSegment.tprimeMax);
+                segmentStart = newSegment.absolutePointAt(newSegment.tprimeMax);
             }
             curves.push(new Dubins(segments, turnRadius));
         }
@@ -247,7 +247,7 @@ export class Dubins {
             let type = PATH_TYPES[SEGMENT_ORDER[bestWord]].segments[i]
             let newSegment = new Segment(type, segmentStart, turnRadius, [tz, pz, qz][i][bestWord]);
             segments.push(newSegment);
-            segmentStart = newSegment.pointAtLength(newSegment.tprimeMax);
+            segmentStart = newSegment.absolutePointAt(newSegment.tprimeMax);
         }
 
         return new Dubins(segments, turnRadius);
@@ -267,11 +267,11 @@ export class Dubins {
     pointAt(pos: number) {
         let tprime = map(pos, 0, 1, 0, this.tprimeMax);
         if (tprime < this.segments[0].tprimeMax) {
-            return this.segments[0].pointAtLength(tprime);
+            return this.segments[0].absolutePointAt(tprime);
         } else if ((tprime - this.segments[0].tprimeMax) < this.segments[1].tprimeMax) {
-            return this.segments[1].pointAtLength((tprime - this.segments[0].tprimeMax));
+            return this.segments[1].absolutePointAt((tprime - this.segments[0].tprimeMax));
         } else {
-            return this.segments[2].pointAtLength((tprime - this.segments[0].tprimeMax - this.segments[1].tprimeMax));
+            return this.segments[2].absolutePointAt((tprime - this.segments[0].tprimeMax - this.segments[1].tprimeMax));
         }
     }
 
@@ -282,11 +282,11 @@ export class Dubins {
         }
         let tprime = length / this.turnRadius;
         if (tprime < this.segments[0].tprimeMax) {
-            return this.segments[0].pointAtLength(tprime);
+            return this.segments[0].absolutePointAt(tprime);
         } else if ((tprime - this.segments[0].tprimeMax) < this.segments[1].tprimeMax) {
-            return this.segments[1].pointAtLength((tprime - this.segments[0].tprimeMax));
+            return this.segments[1].absolutePointAt((tprime - this.segments[0].tprimeMax));
         } else {
-            return this.segments[2].pointAtLength((tprime - this.segments[0].tprimeMax - this.segments[1].tprimeMax));
+            return this.segments[2].absolutePointAt((tprime - this.segments[0].tprimeMax - this.segments[1].tprimeMax));
         }
     }
 
@@ -307,7 +307,7 @@ export class Segment {
         public tprimeMax: number,
     ) { }
 
-    pointAtLength(tprime: number): Waypoint {
+    absolutePointAt(tprime: number): Waypoint {
         const point: Waypoint = {
             x: 0,
             y: 0,
