@@ -259,6 +259,9 @@ export class Dubins {
     // TODO: good floating point solution would probably be good here
     // 0 <= pos <= 1
     pointAt(pos: number) {
+        if (pos > 1) {
+            throw new Error(`Cannot get point at pos > 1 (${pos})`);
+        }
         let tprime = map(pos, 0, 1, 0, this.tprimeMax);
         if (tprime < this.segments[0].tprimeMax) {
             return this.segments[0].absolutePointAt(tprime);
@@ -300,6 +303,29 @@ export class Segment {
         public turnRadius: number,
         public tprimeMax: number,
     ) { }
+
+    get length(){
+        return Math.floor(this.tprimeMax * this.turnRadius);
+    }
+
+    // TODO: good floating point solution would probably be good here
+    // 0 <= pos <= 1
+    pointAt(pos: number) {
+        if (pos > 1) {
+            throw new Error(`Cannot get point at pos > 1 (${pos})`);
+        }
+        let tprime = Math.min(map(pos, 0, 1, 0, this.tprimeMax), this.tprimeMax);
+        return this.absolutePointAt(tprime);
+    }
+
+    pointAtLength(length: number) {
+        // TODO: is this correct?
+        if (length > this.length) {
+            throw new Error('length exceeds unit length');
+        }
+        let tprime = Math.max(length / this.turnRadius, this.tprimeMax);
+        return this.absolutePointAt(tprime);
+    }
 
     absolutePointAt(tprime: number): Waypoint {
         const point: Waypoint = {
