@@ -6,7 +6,7 @@ let wpt1: Waypoint = { x: 0, y: 0, psi: 1.5707963267948966 };
 let wpt2: Waypoint = { x: 6000, y: 7000, psi: 3.3161255787892263 };
 let wpt3: Waypoint = { x: 1000, y: 15000, psi: 4.71238898038469 };
 let wpt4: Waypoint = { x: 0, y: 0, psi: 3.141592653589793 };
-let turnRadius =  2270.8741936308616;
+let turnRadius = 2270.8741936308616;
 
 let p1p2 = Dubins.path(
     wpt1,
@@ -25,6 +25,7 @@ assert.deepEqual(
                 turnRadius: 2270.8741936308616,
                 startPoint: { x: 0, y: 0, psi: 1.5707963267948966 },
                 tprimeMax: 1.518540974848893,
+                length: 3448
             },
             {
                 type: SEGMENT_TYPES.STRAIGHT,
@@ -35,6 +36,7 @@ assert.deepEqual(
                     psi: 0.052255351946003614
                 },
                 tprimeMax: 1.9228903638756734,
+                length: 4366
             },
             {
                 type: SEGMENT_TYPES.LEFT,
@@ -44,7 +46,8 @@ assert.deepEqual(
                     y: 2495.8510382145046,
                     psi: 0.052255351946003614
                 },
-                tprimeMax: 3.2638702268432223
+                tprimeMax: 3.2638702268432223,
+                length: 7411
             },
         ]
     }
@@ -124,6 +127,7 @@ assert.deepEqual(
                 turnRadius: 2270.8741936308616,
                 startPoint: { y: 7000, x: 6000, psi: 3.3161255787892263 },
                 tprimeMax: 2.1792794314612287,
+                length: 4948
             },
             {
                 type: SEGMENT_TYPES.STRAIGHT,
@@ -134,6 +138,7 @@ assert.deepEqual(
                     psi: 1.1368461473279972
                 },
                 tprimeMax: 1.8705235889691287,
+                length: 4247
             },
             {
                 type: SEGMENT_TYPES.LEFT,
@@ -143,7 +148,8 @@ assert.deepEqual(
                     y: 14045.192509133976,
                     psi: 1.1368461473279972
                 },
-                tprimeMax: 3.5755428330566925
+                tprimeMax: 3.5755428330566925,
+                length: 8119
             },
         ]
     }
@@ -194,6 +200,7 @@ assert.deepEqual(
                 turnRadius: 2270.8741936308616,
                 startPoint: { x: 1000, y: 15000, psi: 4.71238898038469 },
                 tprimeMax: 0.10133129490561821,
+                length: 230
             },
             {
                 type: SEGMENT_TYPES.STRAIGHT,
@@ -204,6 +211,7 @@ assert.deepEqual(
                     psi: 4.813720275290308
                 },
                 tprimeMax: 5.430928410974976,
+                length: 12332
             },
             {
                 type: SEGMENT_TYPES.RIGHT,
@@ -214,6 +222,7 @@ assert.deepEqual(
                     psi: 4.813720275290308
                 },
                 tprimeMax: 1.6721276217005148,
+                length: 3797
             },
         ]
     }
@@ -288,6 +297,7 @@ assert.deepEqual(
                 turnRadius: 342.73935987877445,
                 startPoint: { x: 0, y: 0, psi: 1.5707963267948966 },
                 tprimeMax: 0.7873146081329452,
+                length: 269
             },
             {
                 type: SEGMENT_TYPES.STRAIGHT,
@@ -298,6 +308,7 @@ assert.deepEqual(
                     psi: 0.7834817186619514
                 },
                 tprimeMax: 25.535876601172724,
+                length: 8752
             },
             {
                 type: SEGMENT_TYPES.LEFT,
@@ -308,6 +319,7 @@ assert.deepEqual(
                     psi: 0.7834817186619514
                 },
                 tprimeMax: 2.5326438601272745,
+                length: 868
             },
         ]
     }

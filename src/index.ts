@@ -305,9 +305,19 @@ export class Segment {
         public tprimeMax: number,
     ) { }
 
-    get length(){
+    get length() {
         return Math.floor(this.tprimeMax * this.turnRadius);
     }
+
+    // get center(): {
+    //     x: number;
+    //     y: number;
+    // } {
+    //     return {
+    //         x: 3,
+    //         y: 3,
+    //     }
+    // }
 
     // TODO: good floating point solution would probably be good here
     // 0 <= pos <= 1
@@ -360,6 +370,7 @@ export class Segment {
             startPoint: this.startPoint,
             turnRadius: this.turnRadius,
             tprimeMax: this.tprimeMax,
+            length: this.length,
         }
     }
 }
