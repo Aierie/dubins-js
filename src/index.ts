@@ -358,7 +358,7 @@ export class Segment {
         if (length > this.length) {
             throw new Error('length exceeds unit length');
         }
-        let tprime = Math.max(length / this.turnRadius, this.tprimeMax);
+        let tprime = Math.min(length / this.turnRadius, this.tprimeMax);
         return this.absolutePointAt(tprime);
     }
 
